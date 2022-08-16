@@ -24,7 +24,7 @@ On exp_AB_wide1.Rdata, you run Fig_1_remove_invariant.R to remove MAIT and IkT c
 
 *I didn't have exp_AB_wide1.Rdata from Benny, so I used the version I had in my old repo*
 
-**1B** Martina to add
+**1B** bulk_analysis_expanded.R calculates richness, Shannon diversity, Renyi etc from exp_AB_wide3.R, then saves it to a result file
 
 **1C, D** script_2.R, Section B
 
@@ -56,7 +56,7 @@ Fig_1_remove_invariant.R removes MAIT and IkT cells from the expanded list.
 
 **S3** script_S1.R
 
-**S4** From Martina – script?
+**S4** script_S4.R, this takes all_A_long.Rdata and all_B_long.Rdata as input, and calculates some of the standard bulk metrics. The script then saves the results. This is equivalent to bulk_analysis_expanded.R
 
 **S5** script_1.R
 
