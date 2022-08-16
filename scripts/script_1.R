@@ -3,36 +3,53 @@
 # and extracts all the TCRs which change between time points, by an amount greater than would be expected by chance.
 #the script  plots this data for all volunteers and all time points. It also saves all the TCRs (as a combination of V, J and nucleeotide junction.
 
+# function to save plot
+imageSave<-function(file,w=11,h=8.5,res=300,p=24, antialias = "default"){
+  plot<-recordPlot()
+  png(filename=file, units="in", width=w, height=h, res=res,antialias = antialias,pointsize=p)
+  replayPlot(plot)
+  dev.off()
+}
+
+
+
 #plot COVID response
 library(mgcv)
 
-#on Linux
-drive <- "/media/benny/data/"
-#on Windows
-drive<-"C:/users/Benny Chain/"
 #this is the path to the master files on my computer
-input_data<-"Dropbox\\Temp (1)\\Papers\\COVIDsortium\\TCR_paper\\data_for_paper\\"
-dir<-dir(paste0(drive,input_data))
+# input_data<-"data/"
+# dir<-dir(input_data)
 
 #folder for collecting output
 #folder<-"Dropbox/R_temp/01_09_2021/"
 #folder for plots
-folder_plots<-"Dropbox\\Temp (1)\\Papers\\COVIDsortium\\TCR_paper\\Figs\\Pairwise\\"
+folder_plots<-"output_figs/script_1/" # don't save to dropbox, so if people use this will save locally
 #folder for data output
-folder_data<-"Dropbox\\Temp (1)\\Papers\\COVIDsortium\\TCR_paper\\Data_for_paper\\"
+folder_data<-"data/output_data/"  # don't save to dropbox, so if people use this will save locally
 
 #I run the script separately for alpha and beta chains; I have commented out beta chain at the moment
 #alpha
-load(paste0(drive,input_data,"data_tsv_alpha.Rdata"))
-chain<-"alpha"
-data<-data_tsv_alpha
-rm(data_tsv_alpha)
+# data is now loaded on a Dropbox that anyone with the link can access
+# so we load the data from there
+# myURL <- "https://www.dropbox.com/s/93jzrddo291h202/data_tsv_alpha.Rdata?raw=1"
+# myConnection <- url(myURL)
+# print(load(myConnection))
+# close(myConnection)
+# 
+# chain<-"alpha"
+# data<-data_tsv_alpha
+# rm(data_tsv_alpha)
 
-#Beta
-load(paste0(drive,input_data,"data_tsv_beta.Rdata"))
+# Run this for beta
+myURL<-"https://www.dropbox.com/s/7osyel4pit0gayn/data_tsv_beta.Rdata?raw=1"
+myConnection <- url(myURL)
+print(load(myConnection))
+close(myConnection)
+
 chain<-"beta"
 data<-data_tsv_beta
 rm(data_tsv_beta)
+
 
 #analyse individual changes in TCRS
 #list of ids
@@ -187,7 +204,10 @@ for ( i in 1 : (length(time)-1)){
 
 #save the plots using a homemade function called imageSave, which makes saving plots
 #much more straightforward
-  imageSave(file=paste0(drive,folder_plots,v,"_",time[i],"_",time[j],"_",chain,".png"))
+  
+  # imageSave(file=paste0(folder_plots,v,"_",time[i],"_",time[j],"_",chain,".png"))
+  # commenting this out, because we only show a couple of patients, which you can
+  # plot using Fig1a_c.R
 
   }
   #calculate which points are outside error limits
@@ -234,15 +254,12 @@ n<-n+1
 #depending on what was decided on lines 20-25.
 if (chain=="alpha"){
   TCR_change_HCW_a<-TCR_change_HCW
-  save(TCR_change_HCW_a, file = paste0(drive, folder_data,"TCR_change_all_alpha.RData"))
+  save(TCR_change_HCW_a, file = paste0(folder_data,"TCR_change_all_alpha.RData"))
     }
 
 if (chain=="beta"){
   TCR_change_HCW_b<-TCR_change_HCW
-  save(TCR_change_HCW_b, file = paste0(drive, folder_data,"TCR_change_all_beta.RData"))
+  save(TCR_change_HCW_b, file = paste0(folder_data,"TCR_change_all_beta.RData"))
 }
-
-#load(file = paste0(drive, folder,"TCR_change_all_alpha.RData"))
-#load(file = paste0(drive, folder,"TCR_change_all_beta.RData"))
 
 
