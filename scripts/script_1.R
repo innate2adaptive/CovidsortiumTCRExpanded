@@ -3,7 +3,7 @@
 # and extracts all the TCRs which change between time points, by an amount greater than would be expected by chance.
 #the script  plots this data for all volunteers and all time points. It also saves all the TCRs (as a combination of V, J and nucleeotide junction.
 
-# function to save plot
+# define custom function to save plot
 imageSave<-function(file,w=11,h=8.5,res=300,p=24, antialias = "default"){
   plot<-recordPlot()
   png(filename=file, units="in", width=w, height=h, res=res,antialias = antialias,pointsize=p)
@@ -11,17 +11,9 @@ imageSave<-function(file,w=11,h=8.5,res=300,p=24, antialias = "default"){
   dev.off()
 }
 
-
-
 #plot COVID response
 library(mgcv)
 
-#this is the path to the master files on my computer
-# input_data<-"data/"
-# dir<-dir(input_data)
-
-#folder for collecting output
-#folder<-"Dropbox/R_temp/01_09_2021/"
 #folder for plots
 folder_plots<-"output_figs/script_1/" # don't save to dropbox, so if people use this will save locally
 #folder for data output

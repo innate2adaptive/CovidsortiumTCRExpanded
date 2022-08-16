@@ -12,9 +12,17 @@ Scripts in: scripts/
 Output plots in: output_figs/
 
 #### Main figs
-**1A** script_1.R
+**1A** script_1.R, this makes the dot plots for each patient, between parwise timepoints. The saveImage() function is currently commented out. 
+
+Data input is in the dropbox, inside the data folder. 
 
 Need to run twice, once for alpha, and once for beta. Produces plots; and a list of up and downregulated TCRs, which is saved as "TCR_change_all_alpha.RData" and "TCR_change_all_beta.RData"
+
+*I am missing a script here that goes from TCR_change_all_[alpha/beta].R to exp_AB_wide1.R (?)*
+
+On exp_AB_wide1.Rdata, you run Fig_1_remove_invariant.R to remove MAIT and IkT cells from the expanded list -> obtain exp_AB_wide3.Rdata
+
+*I didn't have exp_AB_wide1.Rdata from Benny, so I used the version I had in my old repo*
 
 **1B** Martina to add
 
