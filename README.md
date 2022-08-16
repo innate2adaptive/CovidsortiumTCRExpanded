@@ -1,7 +1,7 @@
 # CovidsortiumTCRExpanded
 Scripts that produce data and figures for the COVIDsortium TCR paper (Aug 2022)
 
-###Figures – data and scripts
+### Figures – data and scripts
 
 Current version of MS is Word file TCR_COV2_V5.docx; Current main figures : Figures_V4.pptx; Current supplementary figures : Figures_S_V2.pptx 
 
@@ -9,7 +9,7 @@ Data in: data/
 Scripts in: scripts/
 Output plots in: output_figs/
 
-####Main figs
+#### Main figs
 1a. Script_1.R
 
 Need to run twice, once for alpha, and once for beta. Produces plots; and a list of up and downregulated TCRs, which is saved as "TCR_change_all_alpha.RData" and
@@ -35,11 +35,11 @@ Fig 3
 
 Fig 4 Scripts from Cedric to add.
 
-####Additional scripts
+#### Additional scripts
 
 Fig_1_remove_invariant.R removes MAIT and IkT cells from the expanded list.
 
-####Supplementary
+#### Supplementary
 
 S1 FACS Plots from Michal
 
