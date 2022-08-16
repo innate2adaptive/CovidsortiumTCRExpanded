@@ -215,5 +215,5 @@ for (id in unique(exp_B_long$ID)){
   }
 }
 
-saveRDS(results_A, "data/output_data/exp_B_bulk_analysis.RData")
-saveRDS(results_ss_summary_A, "data/output_data/exp_B_bulk_analysis_subsampled.RData")
+saveRDS(results_B, "data/output_data/exp_B_bulk_analysis.RData")
+saveRDS(results_ss_summary_B, "data/output_data/exp_B_bulk_analysis_subsampled.RData")
