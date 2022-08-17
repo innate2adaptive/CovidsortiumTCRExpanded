@@ -15,7 +15,7 @@ imageSave<-function(file,w=11,h=8.5,res=300,p=24, antialias = "default"){
 library(mgcv)
 
 #folder for plots
-folder_plots<-"output_figs/script_1/" # don't save to dropbox, so if people use this will save locally
+folder_plots<-"output_figures/" # don't save to dropbox, so if people use this will save locally
 #folder for data output
 folder_data<-"data/output_data/"  # don't save to dropbox, so if people use this will save locally
 
@@ -42,7 +42,6 @@ chain<-"beta"
 data<-data_tsv_beta
 rm(data_tsv_beta)
 
-
 #analyse individual changes in TCRS
 #list of ids
 HCW_all<-unique(data$ID)
@@ -63,7 +62,7 @@ par(mar=c(5, 10, 4, 2) + 0.1)
 #RESTART
 #####################################################################
 
-#collects all  TCRs which change at each time point for each volunteer, as a named list
+##collects all  TCRs which change at each time point for each volunteer, as a named list
 TCR_change_HCW<-list()
 #p is index of HCW names in alphabetical order
 #v is number of volunteer
@@ -83,8 +82,8 @@ n<-1
 #loop for all volunteers
 p<-1
 #flag for whether to do plots
-plot<-"TRUE"
-#plot<-"FALSE"
+#plot<-"TRUE"
+plot<-"FALSE"
 for ( p in 1:length(HCW_all)){
   v<-HCW_all[p]
 #select the data for this individual
@@ -196,10 +195,7 @@ for ( i in 1 : (length(time)-1)){
 
 #save the plots using a homemade function called imageSave, which makes saving plots
 #much more straightforward
-  
-  # imageSave(file=paste0(folder_plots,v,"_",time[i],"_",time[j],"_",chain,".png"))
-  # commenting this out, because we only show a couple of patients, which you can
-  # plot using Fig1a_c.R
+  imageSave(file=paste0(folder_plots,v,"_",time[i],"_",time[j],"_",chain,".png"))
 
   }
   #calculate which points are outside error limits
@@ -238,7 +234,7 @@ for ( i in 1 : (length(time)-1)){
 TCR_change_HCW[[n]]<-TCR_change_all
 names(TCR_change_HCW)[[n]]<-v
 #cat(v, "\n")
-if(is.na(TCR_change_all)){cat( v ," has only one timepoint","\n")}
+if(all(is.na(TCR_change_all))){cat( v ," has only one timepoint","\n")}
 n<-n+1
 }#end of HCW loop
 
@@ -253,5 +249,3 @@ if (chain=="beta"){
   TCR_change_HCW_b<-TCR_change_HCW
   save(TCR_change_HCW_b, file = paste0(folder_data,"TCR_change_all_beta.RData"))
 }
-
-
