@@ -1,62 +1,41 @@
 library(tabula)
 library(tidyr)
 library(dplyr)
+library(reshape)
 library(testit)
 library(vegan)
 library(DescTools)
 
-load("data/output_data/exp_AB_wide3.R")
+# load data from dropbox
 
-idcols <-c("decombinator_id", "v_call", "junction_aa", "j_call", "chain",
-           "ID", "control")
-variablecol1<-c("total_.3", "total_.2", "total_.1", "total_0", "total_1", "total_2", "total_3",
-               "total_4", "total_14")
-variablecol2<-c("proportion_.3", "proportion_.2", "proportion_.1", "proportion_0", "proportion_1", 
-                "proportion_2",  "proportion_3", "proportion_4", "proportion_14")
+options(timeout = max(1000, getOption("timeout"))) # increasing timeout might be necessary to load the files
 
-exp_AB_long1<-reshape(exp_AB_wide3[c(idcols, variablecol1)], direction = "long", 
-        varying = variablecol1, timevar = "week_PCR", 
-        times = c(".3", ".2", ".1", "0", "1", "2", "3", "4", "14"),
-        v.names = "total", sep = "_")
-exp_AB_long2<-reshape(exp_AB_wide3[c(idcols, variablecol2)], direction = "long", 
-                      varying = variablecol2, timevar = "week_PCR", 
-                      times = c(".3", ".2", ".1", "0", "1", "2", "3", "4", "14"),
-                      v.names = "proportion", sep = "_")
+myURL<-"https://www.dropbox.com/s/a7ymcecnpomge2e/all_A_long.RData?raw=1"
+myConnection <- url(myURL)
+print(load(myConnection))
+close(myConnection)
 
-exp_AB_long<-merge(exp_AB_long1, exp_AB_long2, by=c(idcols, "week_PCR"))
-exp_AB_long[is.na(exp_AB_long)]<-0
-exp_AB_long0<-exp_AB_long[exp_AB_long$total > 0,]
+## remove MAIT and invariant
+#remove MAIT
+i_V<-which(all_A_long$v_call=="TRAV1-2")
+i_J<-which(all_A_long$j_call=="TRAJ12" | all_A_long$j_call=="TRAJ20" | all_A_long$j_call=="TRAJ33")
+inter<-intersect(i_V,i_J)
+all_A_long1<-all_A_long[-inter,]
 
-exp_AB_long0$week_PCR<-lapply(exp_AB_long0$week_PCR, function(x) {gsub("\\.", "-", x)})
-exp_AB_long0$mycounts<-as.numeric(exp_AB_long0$total) * (as.numeric(exp_AB_long0$proportion)/10^6)
-exp_AB_long0$counts<-as.integer(round(exp_AB_long0$mycounts, 0))
+#remove iKT
+i_V<-which(all_A_long1$v_call=="TRAV10")
+i_J<-which(all_A_long1$j_call=="TRAJ18")
+all_A_long2<-all_A_long1[-(intersect(i_V,i_J)),]
 
-## note that "total" is not total number of expanded, but rather total number in sample
+rm(all_A_long)
+rm(all_A_long1)
 
-exp_AB_long0$total_exp<-0
-
-for (id in unique(exp_AB_long0$ID)){
-  for (chain in c("alpha", "beta")){
-    ss<-exp_AB_long0[(exp_AB_long0$ID == id) & (exp_AB_long0$chain == chain),]
-    for (week in unique(ss$week_PCR)){
-      total<-sum(exp_AB_long0[(exp_AB_long0$ID == id) & 
-                                  (exp_AB_long0$chain == chain) & 
-                                  (exp_AB_long0$week_PCR == week), "counts"])
-      exp_AB_long0[(exp_AB_long0$ID == id) & 
-                     (exp_AB_long0$chain == chain) & 
-                     (exp_AB_long0$week_PCR == week),]$total_exp<-total
-    }
-  }
-}
-
-exp_AB_long01<-exp_AB_long0[(exp_AB_long0$total_exp > 100) & (exp_AB_long0$counts > 0) ,]
-
-exp_A_long<-exp_AB_long01[exp_AB_long01$chain == "alpha",]
-exp_B_long<-exp_AB_long01[exp_AB_long01$chain == "beta",]
+all_A_long2$mycounts<-as.numeric(all_A_long2$total) * (as.numeric(all_A_long2$proportion)/10^6)
+all_A_long2$counts<-as.integer(round(all_A_long2$mycounts, 0))
 
 #min number to subsample to
-min_depth<-min(exp_A_long$total_exp) # total contains the total number of sequences from each week
-subsampleSize_a<-round(min_depth/10, 0)*10
+min_depth<-min(all_A_long2$total) # total contains the total number of sequences from each week
+subsampleSize_a<-round(min_depth/10^4, 0)*10^4
 
 extract_diversity_metrics<-function(x, expanded_x){
   total<-sum(x$counts)
@@ -101,19 +80,19 @@ extract_diversity_metrics<-function(x, expanded_x){
 results_A<-data.frame()
 results_ss_summary_A<-data.frame()
 
-for (id in unique(exp_A_long$ID)){
+for (id in unique(all_A_long2$ID)){
   print(paste("ID:", id))
-  thisID<-exp_A_long[exp_A_long$ID == id,]
+  thisID<-all_A_long2[all_A_long2$ID == id,]
   sum(thisID$counts)
   for (week in unique(thisID$week_PCR)){
     print(paste("week:", week))
     thisWeek<-thisID[(thisID$week_PCR == week) & (thisID$counts > 0),]
-    print(dim(thisWeek))
+    # print(dim(thisWeek))
     control<-unique(thisWeek$control)
-    total<-unique(thisWeek$total_exp)
+    total<-unique(thisWeek$total)
  
     expanded<-thisWeek %>% uncount(counts)
-    assert("Assert expected number of rows in table", total == dim(expanded)[1])
+    # assert("Assert expected number of rows in table", total == dim(expanded)[1]) # this assertion only works if we keep in MAIT and iKT
     
     myresults<-extract_diversity_metrics(thisWeek, expanded)
     
@@ -153,31 +132,40 @@ for (id in unique(exp_A_long$ID)){
   }
 }
 
-saveRDS(results_A, "data/output_data/exp_A_bulk_analysis.RData")
-saveRDS(results_ss_summary_A, "data/output_data/exp_A_bulk_analysis_subsampled.RData")
-
+saveRDS(results_A, "data/output_data/all_A_bulk_analysis.RData")
+saveRDS(results_ss_summary_A, "data/output_data/all_A_bulk_analysis_subsampled.RData")
 # repeat for beta
 
-rm(exp_A_long)
+rm(all_A_long2)
 rm(results_A)
 rm(results_ss_summary_A)
 
-min_depth<-min(exp_B_long$total_exp) # total contains the total number of sequences from each week
-subsampleSize_b<-round(min_depth/10, 0)*10
+myURL<-"https://www.dropbox.com/s/9kl9s4y775wam9z/all_B_long.RData?raw=1"
+myConnection <- url(myURL)
+print(load(myConnection))
+close(myConnection)
+
+all_B_long$mycounts<-as.numeric(all_B_long$total) * (as.numeric(all_B_long$proportion)/10^6)
+all_B_long$counts<-as.integer(round(all_B_long$mycounts, 0))
+# I have checked, and sum of counts for each week corresponds to the total for the week
+# so this code should be doing the right thing
+
+min_depth<-min(all_B_long$total) # total contains the total number of sequences from each week
+subsampleSize_b<-round(min_depth/10^4, 0)*10^4
 
 results_B<-data.frame()
 results_ss_summary_B<-data.frame()
 
-for (id in unique(exp_B_long$ID)){
+for (id in unique(all_B_long$ID)){
   print(paste("ID:", id))
-  thisID<-exp_B_long[exp_B_long$ID == id,]
+  thisID<-all_B_long[all_B_long$ID == id,]
   sum(thisID$counts)
   for (week in unique(thisID$week_PCR)){
     print(paste("week:", week))
     thisWeek<-thisID[(thisID$week_PCR == week) & (thisID$counts > 0),]
     print(dim(thisWeek))
     control<-unique(thisWeek$control)
-    total<-unique(thisWeek$total_exp)
+    total<-unique(thisWeek$total)
     
     expanded<-thisWeek %>% uncount(counts)
     assert("Assert expected number of rows in table", total == dim(expanded)[1])
@@ -210,5 +198,5 @@ for (id in unique(exp_B_long$ID)){
   }
 }
 
-saveRDS(results_B, "data/output_data/exp_B_bulk_analysis.RData")
-saveRDS(results_ss_summary_B, "data/output_data/exp_B_bulk_analysis_subsampled.RData")
+saveRDS(results_B, "data/output_data/all_B_bulk_analysis.RData")
+saveRDS(results_ss_summary_B, "data/output_data/all_B_bulk_analysis_subsampled.RData")
