@@ -105,7 +105,7 @@ for (id in unique(all_A_long2$ID)){
     print("Iterating subsamples")
     t0<-Sys.time()
     
-    for (i in 1:100){
+    for (i in 1:50){
       # t<-Sys.time()
       subsampled_expanded<-data.frame(expanded[sample(nrow(expanded), subsampleSize_a), ])
       total_ss<-subsampleSize_a
@@ -178,7 +178,7 @@ for (id in unique(all_B_long$ID)){
     
     ss_results_all<-data.frame()
     
-    for (i in 1:100){
+    for (i in 1:50){
       subsampled_expanded<-data.frame(expanded[sample(nrow(expanded), subsampleSize_b), ])
       total_ss<-subsampleSize_b
       
