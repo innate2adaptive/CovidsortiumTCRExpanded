@@ -3,14 +3,6 @@
 # and extracts all the TCRs which change between time points, by an amount greater than would be expected by chance.
 #the script  plots this data for all volunteers and all time points. It also saves all the TCRs (as a combination of V, J and nucleeotide junction.
 
-# define custom function to save plot
-imageSave<-function(file,w=11,h=8.5,res=300,p=24, antialias = "default"){
-  plot<-recordPlot()
-  png(filename=file, units="in", width=w, height=h, res=res,antialias = antialias,pointsize=p)
-  replayPlot(plot)
-  dev.off()
-}
-
 #plot COVID response
 library(mgcv)
 
@@ -81,11 +73,30 @@ v<-107
 n<-1
 #loop for all volunteers
 p<-1
-#flag for whether to do plots
+#flag for whether to do plots for all
 #plot<-"TRUE"
-plot<-"FALSE"
+#plot<-"FALSE"
 for ( p in 1:length(HCW_all)){
   v<-HCW_all[p]
+  
+  # change plot flags only for IDs of interest
+  if (v == "0123"){
+    plot<-TRUE
+    title<-"Fig1a_"
+  }else{
+    if (v == "0373"){
+      plot<-TRUE
+      title<-"FigS5A_"
+    }else{
+      if (v == "0017"){
+        plot<-TRUE
+        title<-"FigS5B_"
+      }else{
+        plot<-FALSE
+      }
+    }
+  }
+  
 #select the data for this individual
 data_i_v<-data[data$ID==v,]
 
@@ -169,34 +180,33 @@ for ( i in 1 : (length(time)-1)){
   if (length(x)>50000){i_sample<-sample(1:length(x),50000)} else {i_sample<-1:length(x)}
   x_ss<-x[i_sample]
   y_ss<-y[i_sample]
-
-  #add a small ranodm noise so teh dots don;t overlie each other
-  x_jit<-rnorm(length(x_ss),x_ss,abs(x_ss)/50)
-  y_jit<-rnorm(length(y_ss),y_ss,abs(y_ss)/50)
-
-  #plot the freqeuncy of each TCR at each of teh two time points
-  plot(x_jit,y_jit,pch=19,cex=0.5,main=paste(v,time[i],time[j],chain),xlim= c(0,12),ylim=c(0,12),xaxt="n",yaxt="n",ylab="TCRs/million",xlab="TCRs/million",cex.lab=2)
-  #plot(x,y,pch=19,cex=0.5,main=paste(v,time[i],time[j],chain),xlim= c(0,12),ylim=c(0,12),xaxt="n",yaxt="n",ylab="TCRs/million",xlab="TCRs/million")
-
-  axis(1, at = c(min(x_ss),4,6,8,10),labels = c(0,2^c(4,6,8,10)),cex.axis=1.5)
-  axis(2, at = c(min(y_ss),4,6,8,10),labels = c(0,2^c(4,6,8,10)),las =2 ,cex.axis=1.5)
-  mx<-mean(x)
-  my<-mean(y)
-
-  #y_pois<-log2(scalar*poiss_l)
-  #add the error limits as calcualted above using Poisson distribution
-  #can correct the error margins by setting r = my/mx. But seems to work better setting r=1
+  
+  mx<-mean(2^x)
+  my<-mean(2^y)
+  
   r<-1
-  points(log2(c(min/4,(2^c(0:4,4))*1E6/sum_m)),log2(c(poiss_l*scalar,2^12)),col="blue",pch=19,type="l", lty = 2,lwd=2)
-  points(log2(c(poiss_l*scalar,2^12)),log2(c(min/4,(2^c(0:4,4))*1E6/sum_m)),col="blue",pch=19,type="l", lty = 2,lwd=2)
-
-  #plot a straight line, whose slope is the relative mean of the tiem time points
-  abline(0,my/mx)
-
-#save the plots using a homemade function called imageSave, which makes saving plots
-#much more straightforward
-  imageSave(file=paste0(folder_plots,v,"_",time[i],"_",time[j],"_",chain,".png"))
-
+  
+  p<-ggplot() + 
+    scale_y_continuous(trans = "log2", limits = c(2^0,2^12)) +
+    scale_x_continuous(trans = "log2", limits = c(2^0,2^12)) +
+    #plot a straight line, whose slope is the relative mean of the time points
+    geom_abline(intercept = 0,slope = my/mx) +
+    # plot the frequency of each TCR at each of the two time points with jitter
+    geom_jitter(aes(x = 2^x_ss, y = 2^y_ss), alpha = 0.3, width = 0.05, height = 0.05) + 
+    #add the error limits as calcualted above using Poisson distribution
+    #can correct the error margins by setting r = my/mx. But seems to work better setting r=1
+    geom_line(aes(x = c(min/4,(2^c(0:4,4))*1E6/sum_m),y=c(poiss_l*scalar,2^12)), col = "blue", lty = "dashed") + # poisson high limit
+    geom_line(aes(x = c(poiss_l*scalar,2^12),y=c(min/4,(2^c(0:4,4))*1E6/sum_m)), col = "blue", lty = "dashed") + # poisson low limit
+    labs(y="TCRs/million",x="TCRs/million") +
+    ggtitle(paste0("HCW: ", v, ", ", chain, ", timepoints: ", time[i], "-", time[j])) +
+    theme_classic() + # keep the theme consistent for all our plots
+    theme(axis.text=element_text(size=12),
+           axis.title=element_text(size=14),
+           title=element_text(size=14)) 
+  
+  svg(paste0(folder_plots, title, v,"_",time[i],"_",time[j],"_",chain,".svg"))
+  print(p)
+  dev.off()
   }
   #calculate which points are outside error limits
   # note that correct margin by mx/my
