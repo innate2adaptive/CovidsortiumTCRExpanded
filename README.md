@@ -30,23 +30,23 @@ On exp_AB_wide1.RData, you run Fig_1_remove_invariant.R to remove MAIT and IkT c
 
 - [x] **1C, D** script_2.R, Section B
 
-- [] **1E, F**
+- [ ] **1E, F**
 
-- [] **1D** script_3.R
+- [ ] **1D** script_3.R
 
-- [] **2A, B** Numbers in matches_summary.xlsx
+- [ ] **2A, B** Numbers in matches_summary.xlsx
 
-- [] **2C** Stacked Histogram plotted in Numbers in matches_summary.xlsx
+- [ ] **2C** Stacked Histogram plotted in Numbers in matches_summary.xlsx
 
-- [] **2D** script_4.R Section C
+- [ ] **2D** script_4.R Section C
 
-- [] **2E** script_4.R Section A
+- [ ] **2E** script_4.R Section A
 
-- [] **2F** Scripts from Martina to add.
+- [ ] **2F** Scripts from Martina to add.
 
-- [] **Fig 3**
+- [ ] **Fig 3**
 
-- [] **Fig 4** Scripts from Cedric to add.
+- [ ] **Fig 4** Scripts from Cedric to add.
 
 #### Additional scripts
 
@@ -54,28 +54,28 @@ Fig_1_remove_invariant.R removes MAIT and IkT cells from the expanded list.
 
 #### Supplementary
 
-- [] **S1** FACS Plots from Michal
+- [ ] **S1** FACS Plots from Michal
 
 - [x] **S2** script_2.R, Section A - 2 separate heatmaps for PCR+ and PCR-
 
-- [] **S3** script_S1.R
+- [ ] **S3** script_S1.R
 
 - [x] **S4** bulk_analysis_all.R, this takes all_A_long.Rdata and all_B_long.Rdata as input, and calculates some of the standard bulk metrics. The script then saves the results. This is equivalent to bulk_analysis_expanded.R. Then plot with FigS4.R.
 
 - [x] **S5** script_1.R
 
-- [] **S6** script_2.R Section D
+- [ ] **S6** script_2.R Section D
 
-- [] **S7** ???
+- [ ] **S7** ???
 
-- [] **S8** script_3.R
+- [ ] **S8** script_3.R
 
-- [] **S9** Plots from Yanchun Peng
+- [ ] **S9** Plots from Yanchun Peng
 
-- [] **S10** ???
+- [ ] **S10** ???
 
-- [] **S11** script_4.R Section B
+- [ ] **S11** script_4.R Section B
 
-- [] **S12** Script from Martina to add
+- [ ] **S12** Script from Martina to add
 
-- [] **S13** Script from Martina to add
+- [ ] **S13** Script from Martina to add
