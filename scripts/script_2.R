@@ -53,7 +53,6 @@ svg("output_figures/FigS2_patient_heatmap_controls.svg")
 pheatmap(data_c[,2:7],color = c("lightblue"),display_numbers=mat_PCR,fontsize_number=11,number_color="red",cluster_cols = FALSE,cluster_rows = FALSE,legend=FALSE, cellwidth = 10, cellheight = 10,  border_color="white",breaks = c(0,2,10),annotation_row = annotations)
 dev.off()
 
-
 ########################################################################################
 #Fig 1c
 

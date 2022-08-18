@@ -4,25 +4,24 @@ library(RColorBrewer)
 library(kernlab)
 library(igraph)
 library(stringdist)
-
-#on Linux
-drive <- "/media/benny/data/"
-#on Windows
-drive<-"C:/users/Benny/"
+library(ggplot2)
 
 #folder for plots
-folder_plots<-"Dropbox\\Temp (1)\\Papers\\COVIDsortium\\TCR_paper\\Figs\\"
+folder_plots<-"output_figures/" # don't save to dropbox, so if people use this will save locally
 #folder for data output
-folder_data<-"Dropbox\\Temp (1)\\Papers\\COVIDsortium\\TCR_paper\\Data_for_paper\\"
+folder_data<-"data/output_data/"  # don't save to dropbox, so if people use this will save locally
 
 file<-"exp_AB_wide3.RData"
 
-file_name<-load(paste0(drive,folder_data,file))
+file_name<-load(paste0(folder_data,file))
 
 exp_AB<-get(file_name)
 counts_all<-as.matrix(exp_AB[,10:18])
 IDs<-unique(exp_AB$ID)
 max<-max(counts_all,na.rm=TRUE)
+
+results<-data.frame()
+
 i<-1
 for ( i in 1:length(IDs)){
 #ID<-"0017"
@@ -46,33 +45,99 @@ max<-max(counts_l,na.rm=TRUE)
 #counts<-as.matrix(exp_AB[i_17,13:17])
 ####################################################
 #################################################################
-#plotting individual traces
-#exp_ID<-exp_AB_wide_pos1[i_17,]
-#plot(-1,-1, xlim = c(1,9), ylim = c(log2(min),max(counts_l,na.rm=TRUE)),main=paste("Cluster ",c))
-if (control[1]=="TRUE") {
-plot(-2,-2,xlim=c(0,6),ylim=c(0,6000),xaxt="n",yaxt="n",xlab= "weeks", ylab="TCR abundance (per 10^3)",main=paste(ID),cex.lab=1.5)
-axis(1,at = c(1,2,3,4,5),labels = c("BL", "FUP1","FUP2","FUP3","FUP4"),cex.axis=1.5)
-axis(2,las=2,at = c(0,2000,4000,6000),labels=c(0,2,4,6),cex.axis=1.5)
-}
 
-#plot(-1,-1, xlim = c(1,9), ylim = c(log2(min),max(counts_l,na.rm=TRUE)),main=paste("Cluster ",c))
-if (control[1]=="FALSE") {
-  plot(-2,-2,xlim=c(0,10),ylim=c(0,6000),xaxt="n",yaxt="n",xlab= "weeks from PCR+",ylab="TCR abundance (per 10^3)",main=paste(ID),cex.lab=1.5)
-  axis(1,at = c(1,2,3,4,5,6,7,8,9),labels = c(-3,-2,-1,0,1,2,3,4,14),cex.axis=1.5)
-  axis(2,las=2,at = c(0,2000,4000,6000),labels=c(0,2,4,6),cex.axis=2.0)
-  }
+# work with counts df so that I can then plot with ggplot2 at the end
 
-j<-1
-for (j in 1: length(i_ID)){
-    x1<-which(!is.na(counts_l[j,]))
-    y<-rnorm(length(counts_l[j,x1]),counts_l[j,x1],counts_l[j,x1]/20)
-    if (control[1]=="TRUE"){  x<-rnorm(length(x1),x1,x1/50) -3}
-    if (control[1]=="FALSE"){  x<-rnorm(length(x1),x1,x1/50)}
-    if (chain[j]=="alpha"){  points(x,y,"b",pch=19,cex=1.5,col="green",lwd=2)}
-    if (chain[j]=="beta"){  points(x,y,"b",pch=19,cex=1.5,col="blue",lwd=2)}
-    
-}
+counts_df <- data.frame(counts_l)
+counts_df["tcrname"]<-rownames(counts_df)
+counts_df["chain"]<-chain
+counts_df_m<-reshape2::melt(counts_df)
+counts_df_m["ID"]<-ID
+counts_df_m["control"]<-unique(control)
 
-imageSave(file=paste0(drive,folder_fig,"individual_dynamics/",ID,"_timecourse.png"))
+results<-rbind(results, counts_df_m)
 
 }
+
+
+# Fig S8A
+p<-ggplot(results[(results$control == FALSE) & (!is.na(results$value)),]) +
+  geom_line(aes(x = variable, y = value, group = tcrname, col = chain)) +
+  geom_point(aes(x = variable, y = value, col = chain)) +
+  scale_color_manual(values = c(alpha = "brown2", beta="navyblue")) +
+  scale_x_discrete(breaks = c("proportion_.3", "proportion_.2", "proportion_.1", 
+                              "proportion_0", "proportion_1", "proportion_2", "proportion_3", "proportion_4", "proportion_14"),
+                   labels = c("-3", "-2", "-1", "0", "1", "2", "3", "4", "14")) +
+  scale_y_continuous(limits = c(0,6000)) +
+  labs(x = "weeks", y = "TCR/million") +
+  facet_wrap(vars(ID), ncol = 7) +
+  theme_classic() +
+  theme(axis.text=element_text(size=10),
+        axis.title=element_text(size=16),
+        title=element_text(size=14))
+
+# Fig S8B
+p_c<-ggplot(results[(results$control == TRUE) & (!is.na(results$value)),]) +
+  geom_line(aes(x = variable, y = value, group = tcrname, col = chain)) +
+  geom_point(aes(x = variable, y = value, col = chain)) +
+  scale_color_manual(values = c(alpha = "brown2", beta="navyblue")) +
+  scale_x_discrete(breaks = c("proportion_.3", "proportion_.2", "proportion_.1", 
+                              "proportion_0", "proportion_1", "proportion_2", "proportion_3", "proportion_4", "proportion_14"),
+                   labels = c("-3", "-2", "-1", "0", "1", "2", "3", "4", "14")) +
+  scale_y_continuous(limits = c(0,6000)) +
+  labs(x = "weeks", y = "TCR/million") +
+  facet_wrap(vars(ID)) +
+  theme_classic() +
+  theme(axis.text=element_text(size=10),
+        axis.title=element_text(size=16),
+        title=element_text(size=14))
+
+svg(paste0(folder_plots, "FigS8A_dynamics_PCR+.svg"), width = 20, height = 15)
+print(p)
+dev.off()
+
+svg(paste0(folder_plots, "FigS8B_dynamics_PCR-.svg"))
+print(p_c)
+dev.off()
+
+# Fig 1E
+
+p1<-ggplot(results[(results$ID == 195),]) +
+  scale_x_discrete(breaks = c("proportion_.3", "proportion_.2", "proportion_.1", 
+                              "proportion_0", "proportion_1", "proportion_2", "proportion_3", "proportion_4", "proportion_14"),
+                   labels = c("-3", "-2", "-1", "0", "1", "2", "3", "4", "14")) +
+  scale_y_continuous(limits = c(0,6000)) +
+  geom_point(aes(x = variable, y = value, col = chain)) +
+  geom_line(aes(x = variable, y = value, group = tcrname, col = chain), 
+            data = results[(results$ID == 195) & (!is.na(results$value)),]) +
+  scale_color_manual(values = c(alpha = "brown2", beta="navyblue")) +
+  labs(x = "weeks", y = "TCR/million") +
+  theme_classic() +
+  theme(axis.text=element_text(size=20),
+        axis.title=element_text(size=16),
+        title=element_text(size=14))
+
+svg(paste0(folder_plots, "Fig1E_dynamics_HCW195.svg"))
+print(p1)
+dev.off()
+
+# Fig 1F
+
+p2<-ggplot(results[(results$ID == 17),]) +
+  scale_x_discrete(breaks = c("proportion_.3", "proportion_.2", "proportion_.1", 
+                              "proportion_0", "proportion_1", "proportion_2", "proportion_3", "proportion_4", "proportion_14"),
+                   labels = c("-3", "-2", "-1", "0", "1", "2", "3", "4", "14")) +
+  scale_y_continuous(limits = c(0,6000)) +
+  geom_point(aes(x = variable, y = value, col = chain)) +
+  geom_line(aes(x = variable, y = value, group = tcrname, col = chain), 
+            data = results[(results$ID == 17) & (!is.na(results$value)),]) +
+  scale_color_manual(values = c(alpha = "brown2", beta="navyblue")) +
+  labs(x = "weeks", y = "TCR/million") +
+  theme_classic() +
+  theme(axis.text=element_text(size=20),
+        axis.title=element_text(size=16),
+        title=element_text(size=14))
+
+svg(paste0(folder_plots, "Fig1F_dynamics_HCW17.svg"))
+print(p2)
+dev.off()

@@ -28,9 +28,7 @@ On exp_AB_wide1.RData, you run Fig_1_remove_invariant.R to remove MAIT and IkT c
 
 - [x] **1C, D** script_2.R, Section B
 
-- [ ] **1E, F**
-
-- [ ] **1D** script_3.R (I think this is figs 1E, F?)
+- [x] **1E, F** script_3.R - plots dynamics for each patient separately.
 
 - [ ] **2A, B** Numbers in matches_summary.xlsx
 
@@ -52,7 +50,7 @@ Fig_1_remove_invariant.R removes MAIT and IkT cells from the expanded list.
 
 #### Supplementary
 
-- [ ] **S1** FACS Plots from Michal
+- [ ] **S1** FACS Plots from Michal - *they are a little pixelated, is there another version?*
 
 - [x] **S2** script_2.R, Section A - 2 separate heatmaps for PCR+ and PCR-
 
@@ -66,7 +64,7 @@ Fig_1_remove_invariant.R removes MAIT and IkT cells from the expanded list.
 
 - [ ] **S7** ???
 
-- [ ] **S8** script_3.R
+- [x] **S8A, B** script_3.R
 
 - [ ] **S9** Plots from Yanchun Peng
 
