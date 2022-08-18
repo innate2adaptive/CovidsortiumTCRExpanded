@@ -34,12 +34,12 @@ pheatmap(data[,2:7],color = c("lightblue"),display_numbers=mat_PCR,fontsize_numb
 dev.off()
 
 #repeat for controls
-data<-read.table("data/data_c.txt",header=TRUE,sep="\t")
+data_c<-read.table("data/data_c.txt",header=TRUE,sep="\t")
 PCR<-read.table("data/TCR_rep_HCW_18_12_2020_b.txt",header=TRUE,sep="\t",stringsAsFactors = FALSE)
-PCR_dat<-right_join(PCR,data,by =c("Sample.ID"="Sample_ID"))
-rownames(data)<-data$Sample_ID
-annotations<-data[,c(8,9)]
-rownames(annotations)<-data$Sample_ID
+PCR_dat<-right_join(PCR,data_c,by =c("Sample.ID"="Sample_ID"))
+rownames(data_c)<-data_c$Sample_ID
+annotations<-data_c[,c(8,9)]
+rownames(annotations)<-data_c$Sample_ID
 mat_PCR<-PCR_dat[,2:7]
 i_pos<-which(mat_PCR=="+++",arr.ind = TRUE)
 mat_PCR[i_pos]<-"X"
@@ -50,7 +50,7 @@ mat_PCR[i_NA]<-""
 #dev.set(1)
 
 svg("output_figures/FigS2_patient_heatmap_controls.svg")
-pheatmap(data[,2:7],color = c("lightblue"),display_numbers=mat_PCR,fontsize_number=11,number_color="red",cluster_cols = FALSE,cluster_rows = FALSE,legend=FALSE, cellwidth = 10, cellheight = 10,  border_color="white",breaks = c(0,2,10),annotation_row = annotations)
+pheatmap(data_c[,2:7],color = c("lightblue"),display_numbers=mat_PCR,fontsize_number=11,number_color="red",cluster_cols = FALSE,cluster_rows = FALSE,legend=FALSE, cellwidth = 10, cellheight = 10,  border_color="white",breaks = c(0,2,10),annotation_row = annotations)
 dev.off()
 
 
@@ -165,13 +165,14 @@ dev.off()
 
 #write.table(exp_AB_wide1,file=paste0(drive, input_data,"exp_AB_wide1.txt"),sep="\t")
 ###################################################
-#correlation to symptoms
+#correlation to symptoms (not in paper figures)
+
 sum_zero<-PCR_total1$proportion_0
 sum_all<-rowMeans(PCR_total1[,0:9],na.rm=TRUE)
 
 data_merge<-merge(IDs,data,by.x= 1, by.y = 1)
 
-#ethnicity
+#ethnicity (not in paper figures)
 i_white<-which(data_merge$Ethnicity=="White")
 i_black<-which(data_merge$Ethnicity=="Black")
 i_asian<-which(data_merge$Ethnicity=="Asian")
@@ -191,7 +192,6 @@ z
 
 abline(z,lwd=2)
 cor.test(x,y,method = "spearman")
-imageSave(file=paste0(drive, folder_fig,"symptoms.png"))
 
 y_white<-y[i_white]
 y_bame<-y[union(i_black,i_asian)]
@@ -208,9 +208,9 @@ ethnicity[i_white]<-1
 
 boxplot(y~ethnicity,add=TRUE,col=NA,axes=FALSE,boxlwd=2,outline=FALSE)
 summary(lm(y~ethnicity))
-imageSave(file=paste0(drive, folder_fig,"Race.png"))
 
-#sex
+
+#sex (not in paper figures)
 wilcox.test(data_merge$Symptoms[i_white],data_merge$Symptoms[union(i_black,i_asian)])
 
 i_male<-which(data_merge$Sex=="Male")
@@ -226,15 +226,14 @@ sex<-rep(0,length(y))
 sex[i_male]<-1
 wilcox.test(y[i_female],y[i_male])
 boxplot(y~sex,add=TRUE,col=NA,axes=FALSE,boxlwd=2,outline=FALSE)
-imageSave(file=paste0(drive, folder_fig,"gender.png"))
-        
+
 #####################
-#Section D Serology time course
-#NP antibody
+#Section D Serology time course 
+#NP antibody - Fig S6B
 data_merge<-merge(IDs,data,by.x= 1, by.y = 1)
 
 #change week to week from PCR
-NP<-read.table(file=paste0(drive,folder_data,"COVIDsortium_Roche_serology.txt"),check.names=FALSE,sep="\t",header=TRUE,stringsAsFactors = FALSE)
+NP<-read.table(file="data/COVIDsortium_Roche_serology.txt",check.names=FALSE,sep="\t",header=TRUE,stringsAsFactors = FALSE)
 NP_merge1<-merge(data_merge,NP,by.x= 1, by.y = 1)
 NP_merge<-NP_merge1[,14:32]
 NP_long <-pivot_longer(NP_merge, cols = 4:19, names_to="week",values_to = "titre")
@@ -252,20 +251,22 @@ NP_15<-rowMeans(NP_wide[,18:22],na.rm=TRUE)
 NP_titre_s<-NP_titre[,1:9]
 NP_titre_s[,10]<-NP_15
 #plot
-plot(-1,-1,xlim=c(0,10),ylim=c(0,(max(NP_titre_s,na.rm=TRUE))),xaxt="none",las=1,xlab="Weeks to PCR+", ylab="NP Antibody titre",yaxt="none",cex.lab=1.5)
-axis(1,at=c(1:10),label=c(-3:5,15),cex.axis=1.5)
-axis(2,at=c(0,50,100,150),labels=c(0,50,100,150),cex.axis=1.4,las=1)
-i<-1
-#c(log2(min/2),8:15)
-for ( i in 1 : dim(NP_titre)[1]){
-  i_na<-which(!is.na(NP_titre_s[i,]))
-  x<-runif(i_na,i_na-(i_na/30),i_na+(i_na/30))
-  y<-unlist(NP_titre_s[i,i_na])
-  points(x,y,pch=19,cex = 1.1,col="blue",type = "p")
-}
+NP_titre_s_m<-reshape2::melt(NP_titre_s)
 
-boxplot((NP_titre_s),add=TRUE,col=NA,axes=FALSE, at=1:10,border = "blue",boxlwd=2,pars = list(boxwex = 0.4, staplewex = 1, outwex = 1),notch=F)
-imageSave(file=paste0(drive, folder_plots,"NP_timecourse.png"))
+p<- ggplot(NP_titre_s_m) + 
+  geom_boxplot(aes(x = variable, y = value), 
+               fill = NA, outlier.alpha = 0, width = 0.5) +
+  geom_jitter(aes(x = variable, y = value), width = 0.1) +
+  labs(x = "weeks", y = "NP Antibody titre") +
+  scale_x_discrete(labels = c("-3", "-2", "-1", "0", "1", "2", "3", "4", "5", "15")) + 
+  theme_classic() +
+  theme(axis.text=element_text(size=20),
+        axis.title=element_text(size=16))
+
+svg("output_figures/FigS6B_NP_titre_timecourse.svg")
+print(p)
+dev.off()
+
 #dir(paste0(drive,folder1))
 early_NP<-rowMeans(NP_titre[,1:8],na.rm=TRUE)
 total_NP<-rowMeans(NP_titre[,1:19],na.rm=TRUE)
@@ -274,18 +275,16 @@ plot(early_NP,total_NP)
 
 plot(early_NP,sum_all,xlab="NP Antibody",ylab="Total TCR abundance",pch=19,col="blue",cex.axis=1.5,cex.lab=1.5,main=0.019)
 abline(lm(sum_all~early_NP),lwd=2)
-imageSave(file=paste0(drive, folder_fig,"NP_corr.png"))
 
 cor.test(total_NP,sum_all,method="spearman")
 
 cor.test(early_NP,sum_all,method="spearman")
 
-
 #############################################################
 
-#SP antibody
+#SP antibody - Fig S6B
 #change week to week from PCR
-NP<-read.table(file=paste0(drive,folder_data,"Serology_clinical_09_2020_SP.csv"),sep=",",na.strings="",check.names=FALSE,header=TRUE,stringsAsFactors = FALSE)
+NP<-read.table(file="data/Serology_clinical_09_2020_SP.csv",sep=",",na.strings="",check.names=FALSE,header=TRUE,stringsAsFactors = FALSE)
 NP_merge1<-merge(data_merge,NP[1:500,],by.x= 1, by.y = 1)
 NP_merge<-NP_merge1[,14:31]
 
@@ -317,26 +316,29 @@ NP_titre_s[,9]<-NP_15
 
 
 i<-1
-for ( i in 1:10){NP_titre_s[,i]<-as.numeric(unlist(NP_titre_s[,i]))}
+for ( i in 1:dim(NP_titre_s)[2]){NP_titre_s[,i]<-as.numeric(unlist(NP_titre_s[,i]))}
 
 #plot
-#plot(-1,-1,xlim=c(0,10),ylim=c(0,max(NP_titre_s,na.rm = TRUE)),xaxt="none",las=1,xlab="Weeks to PCR+", ylab="SP Antibody titre",yaxt="none",cex.lab=1.5)
-plot(-1,-1,xlim=c(0,10),ylim=c(0,12),xaxt="none",las=1,xlab="Weeks to PCR+", ylab="SP Antibody titre",yaxt="none",cex.lab=1.5)
 
-axis(1,at=c(1:10),label=c(-3:5,15),cex.axis=1.3)
-axis(2,at=c(0,5,10,15,20),labels=c(0,5,10,15,20),cex.axis=1.4,las=1)
-i<-1
-#c(log2(min/2),8:15)
-for ( i in 1 : dim(NP_titre_s)[1]){
-  i_na<-which(!is.na(NP_titre_s[i,]))
-  x<-runif(i_na,i_na-(i_na/50),i_na+(i_na/50))+1
-  y<-as.numeric(unlist(NP_titre_s[i,i_na]))
-  points(x,y,pch=19,cex = 1.1,col="blue",type = "p")
-  i
-}
+NP_titre_s_m<-reshape2::melt(NP_titre_s)
 
-a<-boxplot(NP_titre_s,add=TRUE,col=NA,axes=FALSE, at=2:10,border = "blue",boxlwd=2,pars = list(boxwex = 0.4, staplewex = 1, outwex = 1),notch=F)
-imageSave(file=paste0(drive, folder_fig,"SP_time.png"))
+p<- ggplot(NP_titre_s_m) + 
+  geom_boxplot(aes(x = variable, y = value), 
+               fill = NA, outlier.alpha = 0, width = 0.5) +
+  geom_jitter(aes(x = variable, y = value), width = 0.1) +
+  labs(x = "weeks", y = "SP Antibody titre") +
+  scale_x_discrete(labels = c("-3", "-2", "-1", "0", "1", "2", "3", "4", "5", "15"),
+                   limits = c("-3", "-2", "-1", "0", "1", "2", "3", "4", "5", "...9")) + 
+  scale_y_continuous(limits = c(0,10)) +
+  theme_classic() +
+  theme(axis.text=element_text(size=20),
+        axis.title=element_text(size=16))
+
+svg("output_figures/FigS6A_SP_titre_timecourse.svg")
+print(p)
+dev.off()
+
+
 #dir(paste0(drive,folder1))
 
 early_SP<-rowMeans(NP_titre[,1:8],na.rm=TRUE)
@@ -356,5 +358,5 @@ cor.test(early_SP,sum_all,method="spearman")
 summary_table1<-data.frame(cbind(data_merge,sum_all,sum_zero,total_NP,early_NP,total_SP,early_SP))
 summary_table<-summary_table1[,c(1,9,11:21)]
 
-write.table(summary_table,file=paste0(drive,folder,"summary_table.txt"),sep="\t",row.names = FALSE)
+write.table(summary_table,file=paste0(folder_data,"summary_table.txt"),sep="\t",row.names = FALSE)
 

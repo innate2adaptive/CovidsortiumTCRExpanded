@@ -30,7 +30,7 @@ On exp_AB_wide1.RData, you run Fig_1_remove_invariant.R to remove MAIT and IkT c
 
 - [ ] **1E, F**
 
-- [ ] **1D** script_3.R
+- [ ] **1D** script_3.R (I think this is figs 1E, F?)
 
 - [ ] **2A, B** Numbers in matches_summary.xlsx
 
@@ -62,7 +62,7 @@ Fig_1_remove_invariant.R removes MAIT and IkT cells from the expanded list.
 
 - [x] **S5** script_1.R
 
-- [ ] **S6** script_2.R Section D
+- [x] **S6** script_2.R Section D. Script 2 also produces a summary file - summary_data.csv with patient information and some key metrics
 
 - [ ] **S7** ???
 
