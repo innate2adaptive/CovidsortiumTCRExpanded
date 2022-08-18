@@ -4,30 +4,18 @@ library(tidyr)
 library(dplyr)
 library(data.table)
 library(pheatmap)
-
-#on Linux
-drive <- "/media/benny/data/"
-#on Windows
-drive<-"C:/users/Benny/"
-#this is the path to the master files on my computer
-input_data<-"Dropbox\\Temp (1)\\COVID-19\\data\\"
-dir<-dir(paste0(drive,input_data))
+library(ggplot2)
 
 #folder for plots
-folder_plots<-"Dropbox\\Temp (1)\\Papers\\COVIDsortium\\TCR_paper\\Figs\\"
+folder_plots<-"output_figures/" # don't save to dropbox, so if people use this will save locally
 #folder for data output
-folder_data<-"Dropbox\\Temp (1)\\Papers\\COVIDsortium\\TCR_paper\\Data_for_paper\\"
+folder_data<-"data/output_data/"  # don't save to dropbox, so if people use this will save locally
 
-#dir.create(paste0(drive,"Dropbox/R_temp/30_11_2021/"))
-#folder<-"Dropbox\\Temp (1)\\Papers\\COVIDsortium\\TCR_paper\\data_for_paper\\"
-#folder1<-"Dropbox/R_temp/30_11_2021/"
-#folder_fig<-"Dropbox\\Temp (1)\\Papers\\COVIDsortium\\TCR_paper\\figs\\"
-
-#Section A - heatmap of samples and metadata
+#Section A - heatmap of samples and metadata (Fig S2)
 
 #load annotated TCR set
-data<-read.table(paste0(drive, folder_data,"data.txt"),header=TRUE,sep="\t")
-PCR<-read.table(paste0(drive, folder_data,"TCR_rep_HCW_18_12_2020_b.txt"),header=TRUE,sep="\t",stringsAsFactors = FALSE)
+data<-read.table("data/data.txt",header=TRUE,sep="\t")
+PCR<-read.table("data/TCR_rep_HCW_18_12_2020_b.txt",header=TRUE,sep="\t",stringsAsFactors = FALSE)
 PCR_dat<-right_join(PCR,data,by =c("Sample.ID"="Sample_ID"))
 rownames(data)<-data$Sample_ID
 annotations<-data[,c(8,10,11)]
@@ -40,17 +28,38 @@ mat_PCR[i_NA]<-""
 i_NA<-which(is.na(mat_PCR),arr.ind = TRUE)
 mat_PCR[i_NA]<-""
 #dev.set(1)
+
+svg("output_figures/FigS2_patient_heatmap.svg")
 pheatmap(data[,2:7],color = c("lightblue"),display_numbers=mat_PCR,fontsize_number=11,number_color="red",cluster_cols = FALSE,cluster_rows = FALSE,legend=FALSE, cellwidth = 10, cellheight = 10,  border_color="white",breaks = c(0,2,10),annotation_row = annotations)
-imageSave(file=paste0(drive,folder_plots,"patient_heatmap.png"))
-#save manually as svg Fig_1a
+dev.off()
+
+#repeat for controls
+data<-read.table("data/data_c.txt",header=TRUE,sep="\t")
+PCR<-read.table("data/TCR_rep_HCW_18_12_2020_b.txt",header=TRUE,sep="\t",stringsAsFactors = FALSE)
+PCR_dat<-right_join(PCR,data,by =c("Sample.ID"="Sample_ID"))
+rownames(data)<-data$Sample_ID
+annotations<-data[,c(8,9)]
+rownames(annotations)<-data$Sample_ID
+mat_PCR<-PCR_dat[,2:7]
+i_pos<-which(mat_PCR=="+++",arr.ind = TRUE)
+mat_PCR[i_pos]<-"X"
+i_NA<-which(mat_PCR!="X",arr.ind = TRUE)
+mat_PCR[i_NA]<-""
+i_NA<-which(is.na(mat_PCR),arr.ind = TRUE)
+mat_PCR[i_NA]<-""
+#dev.set(1)
+
+svg("output_figures/FigS2_patient_heatmap_controls.svg")
+pheatmap(data[,2:7],color = c("lightblue"),display_numbers=mat_PCR,fontsize_number=11,number_color="red",cluster_cols = FALSE,cluster_rows = FALSE,legend=FALSE, cellwidth = 10, cellheight = 10,  border_color="white",breaks = c(0,2,10),annotation_row = annotations)
+dev.off()
 
 
 ########################################################################################
 #Fig 1c
 
-file<-"exp_AB_wide3.RData"
+file<-"data/output_data/exp_AB_wide3.RData"
 
-file_name<-load(paste0(drive,folder_data,file))
+file_name<-load(file)
 
 i_ctrl<-which(exp_AB_wide3$control==T)
 
@@ -73,12 +82,13 @@ col_names<-1:30
 names(col_names)<-colnames(exp_AB_wide3)
 col_names
 
-#make file wiht unqiue ID and Control status
+#make file with unique ID and Control status
 IDs<-distinct(data.frame(exp_AB_wide3$ID,exp_AB_wide3$control))
 i_ctrl<-which(IDs[,2]=="FALSE")
+
 #####################################################################
 #Section B 
-#plot a time course of total Abudnance at each time point. Individual HCW and box plot
+#plot a time course of total abundance at each time point. Individual HCW and box plot
 #each chain separately
 i_chain<-which(exp_AB_wide3$chain=="beta")
 i_chain<-which(exp_AB_wide3$chain=="alpha")
@@ -111,26 +121,23 @@ PCR_total1<-PCR_total[i_ctrl,2:10]
 #}
 
 #not logged looks nicer !
-par(mar=c(5,4,4,2))
-par(mar=c(3,2,2,2))
-plot(-1,-1,xlim=c(0,10),ylim=c(0,(max(PCR_total1,na.rm=TRUE))),xaxt="none",las=1,xlab="Weeks from first PCR+", ylab="Total TCR abundance (counts/million x 10^5)",yaxt="none",cex.lab=1.5)
-#plot(-1,-1,xlim=c(0,10),ylim=c(0,80000),xaxt="none",las=1,xlab="Weeks to PCR+", ylab="Total TCR abundance (counts/million x 10^5)",yaxt="none",cex.lab=1.5)
 
-axis(1,at=c(1:9),label=c(-3:4,15),cex.axis=1.5)
-axis(2,at=c(0,2,4,6,8,10)*1E4,labels=c(0,2,4,6,8,10),cex.axis=2,las=1)
-i<-1
-#c(log2(min/2),8:15)
-for ( i in 1 : dim(PCR_total1)[1]){
-  i_na<-which(!is.na(PCR_total1[i,]))
-  x<-runif(i_na,i_na-(i_na/30),i_na+(i_na/30))
-  y<-unlist(PCR_total1[i,i_na])
-  points(x,y,pch=19,cex = 1.1,col="red")
-}
+PCR_total1_m<-reshape2::melt(PCR_total1)
 
-boxplot((PCR_total1),add=TRUE,col=NA,axes=FALSE, at=1:9,border = "red",boxlwd=2,pars = list(boxwex = 0.4, staplewex = 1, outwex = 1),notch=F)
+p<- ggplot(PCR_total1_m) + 
+  geom_boxplot(aes(x = variable, y = value/10^4), 
+               fill = NA, outlier.alpha = 0, width = 0.5) +
+  geom_jitter(aes(x = variable, y = value/10^4), width = 0.1) +
+  labs(x = "weeks", y = "TCRs per million / 10^4") +
+  scale_x_discrete(labels = c("-3", "-2", "-1", "0", "1", "2", "3", "4", "14")) + 
+  scale_y_continuous(limits = c(0,9)) +
+  theme_classic() +
+  theme(axis.text=element_text(size=20),
+        axis.title=element_text(size=16))
 
-imageSave(file=paste0(drive,folder_plots,"timecourse-PCRpos.png"))
-
+svg("output_figures/Fig1c_total_abundance.svg")
+print(p)
+dev.off()
 
 #add controls
 
@@ -138,21 +145,23 @@ i_ctrl1<-which(IDs[,2]=="TRUE")
 PCR_total2<-PCR_total[i_ctrl1,5:9]
 
 #not logged looks nicer !
-plot(-1,-1,xlim=c(-1,5),ylim=c(0,(max(PCR_total1,na.rm=TRUE))),xaxt="none",las=1,xlab="Weeks from baseline", ylab="Total TCR abundance (counts/million x 10^5)",yaxt="none",cex.lab=1.5)
-#plot(-1,-1,xlim=c(0,10),ylim=c(0,80000),xaxt="none",las=1,xlab="Weeks to PCR+", ylab="Total TCR abundance (counts/million x 10^5)",yaxt="none",cex.lab=1.5)
 
-axis(1,at=c(0:5),label=c("BL","FUP1","FUP2","FUP3","FUP4",""),cex.axis=1.4)
-axis(2,at=c(0,2,4,6,8,10)*1E4,labels=c(0,2,4,6,8,10),cex.axis=2.0,las=1)
-i<-1
-for ( i in 1 : dim(PCR_total2)[1]){
-  i_na<-which(!is.na(PCR_total2[i,]))
-  x<-(runif(i_na,i_na-(i_na/40),i_na+(i_na/40)))-1
-  y<-unlist((PCR_total2[i,i_na]))
-  points(x,y,pch=19,cex = 1.1,col="black")
-}
+PCR_total2_m<-reshape2::melt(PCR_total2)
 
-boxplot((PCR_total2),add=TRUE,col=NA,axes=FALSE, boxlwd=2,at=c(0:4),border = "black",lwd=1,pars = list(boxwex = 0.4, staplewex = 1, outwex = 1),notch=F)
-imageSave(file=paste0(drive,folder_plots,"timecourse-ctrl.png"))
+p<- ggplot(PCR_total2_m) + 
+  geom_boxplot(aes(x = variable, y = value/10^4), 
+               fill = NA, outlier.alpha = 0, width = 0.5) +
+  geom_jitter(aes(x = variable, y = value/10^4), width = 0.1) +
+  labs(x = "weeks", y = "TCRs per million / 10^4") +
+  scale_x_discrete(labels = c("BL","FUP1","FUP2","FUP3","FUP4","")) + 
+  scale_y_continuous(limits = c(0,9)) +
+  theme_classic() +
+  theme(axis.text=element_text(size=20),
+        axis.title=element_text(size=16))
+
+svg("output_figures/Fig1d_total_abundance_controls.svg")
+print(p)
+dev.off()
 
 #write.table(exp_AB_wide1,file=paste0(drive, input_data,"exp_AB_wide1.txt"),sep="\t")
 ###################################################
