@@ -12,9 +12,7 @@ Scripts in: scripts/
 Output plots in: output_figs/
 
 #### Main figs
-- [x] **1A** script_1.R, this makes the dot plots for each patient, between parwise timepoints. The saveImage() function is currently commented out. 
-
-Data input is in the dropbox, inside the data folder. 
+- [x] **1A** script_1.R, this makes the dot plots for each patient, between parwise timepoints. 
 
 Need to run twice, once for alpha, and once for beta. Produces plots; and a list of up and downregulated TCRs, which is saved as "TCR_change_all_alpha.RData" and "TCR_change_all_beta.RData"
 
