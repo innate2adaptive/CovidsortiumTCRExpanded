@@ -1,4 +1,3 @@
 downloaded_data/
-# output_data/
-output_figs/
 .httr-oauth
+.Rhistory

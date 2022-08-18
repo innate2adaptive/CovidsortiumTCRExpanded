@@ -5,6 +5,7 @@
 
 #plot COVID response
 library(mgcv)
+library(ggplot2)
 
 #folder for plots
 folder_plots<-"output_figures/" # don't save to dropbox, so if people use this will save locally
@@ -15,24 +16,24 @@ folder_data<-"data/output_data/"  # don't save to dropbox, so if people use this
 #alpha
 # data is now loaded on a Dropbox that anyone with the link can access
 # so we load the data from there
-# myURL <- "https://www.dropbox.com/s/93jzrddo291h202/data_tsv_alpha.Rdata?raw=1"
-# myConnection <- url(myURL)
-# print(load(myConnection))
-# close(myConnection)
-# 
-# chain<-"alpha"
-# data<-data_tsv_alpha
-# rm(data_tsv_alpha)
-
-# Run this for beta
-myURL<-"https://www.dropbox.com/s/7osyel4pit0gayn/data_tsv_beta.Rdata?raw=1"
+myURL <- "https://www.dropbox.com/s/93jzrddo291h202/data_tsv_alpha.Rdata?raw=1"
 myConnection <- url(myURL)
 print(load(myConnection))
 close(myConnection)
 
-chain<-"beta"
-data<-data_tsv_beta
-rm(data_tsv_beta)
+chain<-"alpha"
+data<-data_tsv_alpha
+rm(data_tsv_alpha)
+
+# Run this for beta
+# myURL<-"https://www.dropbox.com/s/7osyel4pit0gayn/data_tsv_beta.Rdata?raw=1"
+# myConnection <- url(myURL)
+# print(load(myConnection))
+# close(myConnection)
+# 
+# chain<-"beta"
+# data<-data_tsv_beta
+# rm(data_tsv_beta)
 
 #analyse individual changes in TCRS
 #list of ids
@@ -78,6 +79,8 @@ p<-1
 #plot<-"FALSE"
 for ( p in 1:length(HCW_all)){
   v<-HCW_all[p]
+
+# for (v in c("0017", "0123", "0373")){ # this is if you want to do only the plotting. Comment out two lines before 
   
   # change plot flags only for IDs of interest
   if (v == "0123"){
@@ -178,21 +181,21 @@ for ( i in 1 : (length(time)-1)){
   #for plotting purposes only, not calculation or saving, subsample to 50,000 dots per plot
   if(plot==TRUE){
   if (length(x)>50000){i_sample<-sample(1:length(x),50000)} else {i_sample<-1:length(x)}
-  x_ss<-x[i_sample]
-  y_ss<-y[i_sample]
+  x_ss<-norm_1[i_sample] # using non-log2 so that I can transofrm the axis
+  y_ss<-norm_2[i_sample]
   
-  mx<-mean(2^x)
-  my<-mean(2^y)
+  mx<-mean(x)
+  my<-mean(y)
   
   r<-1
   
   p<-ggplot() + 
-    scale_y_continuous(trans = "log2", limits = c(2^0,2^12)) +
-    scale_x_continuous(trans = "log2", limits = c(2^0,2^12)) +
+    scale_y_continuous(trans = "log2", limits = c(1,2^12)) +
+    scale_x_continuous(trans = "log2", limits = c(1,2^12)) +
     #plot a straight line, whose slope is the relative mean of the time points
     geom_abline(intercept = 0,slope = my/mx) +
     # plot the frequency of each TCR at each of the two time points with jitter
-    geom_jitter(aes(x = 2^x_ss, y = 2^y_ss), alpha = 0.3, width = 0.05, height = 0.05) + 
+    geom_jitter(aes(x = x_ss, y = y_ss), alpha = 0.3, width = 0.05, height = 0.05) + 
     #add the error limits as calcualted above using Poisson distribution
     #can correct the error margins by setting r = my/mx. But seems to work better setting r=1
     geom_line(aes(x = c(min/4,(2^c(0:4,4))*1E6/sum_m),y=c(poiss_l*scalar,2^12)), col = "blue", lty = "dashed") + # poisson high limit
@@ -200,8 +203,8 @@ for ( i in 1 : (length(time)-1)){
     labs(y="TCRs/million",x="TCRs/million") +
     ggtitle(paste0("HCW: ", v, ", ", chain, ", timepoints: ", time[i], "-", time[j])) +
     theme_classic() + # keep the theme consistent for all our plots
-    theme(axis.text=element_text(size=12),
-           axis.title=element_text(size=14),
+    theme(axis.text=element_text(size=20),
+           axis.title=element_text(size=16),
            title=element_text(size=14)) 
   
   svg(paste0(folder_plots, title, v,"_",time[i],"_",time[j],"_",chain,".svg"))
