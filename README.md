@@ -77,7 +77,9 @@ Fig_1_remove_invariant.R removes MAIT and IkT cells from the expanded list.
 
 - [x] **S11** script_4.R Section B
 
-- [ ] **S12** Script from Martina to add
+- [ ] **S12** script_6.R - calculates clustering at various threshold and compares expanded vs non-expanded controls
+
+*(The script is ok, but crashes my laptop. Need to run it on big computer or cluster)*
 
 - [x] **S13** script_5.R - calculates and plots clustering
 
@@ -88,3 +90,5 @@ Fig_1_remove_invariant.R removes MAIT and IkT cells from the expanded list.
 ### Notes:
 
 **script_4.R**: missing summary_with_HLA.txt, so does not run fully
+
+- Script to select controls?
