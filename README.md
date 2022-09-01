@@ -7,6 +7,8 @@ Current version of MS is Word file TCR_COV2_V5.docx; Current main figures : Figu
 
 Data can be found at: https://www.dropbox.com/sh/neg3lpofw85l9ng/AAAw-HckR7LYxKz7TMNQ90zca?dl=0
 
+Note: the scripts automatically load the data from DropBox. This works for me (although sometimes I need to change the timeout), but does not seem to always work outside of the UK. You might need to download the data locally and tweak the scripts to load them.
+
 Scripts in: scripts/
 
 Output plots in: output_figs/
@@ -59,7 +61,7 @@ Fig_1_remove_invariant.R removes MAIT and IkT cells from the expanded list.
 
 - [x] **S2** script_2.R, Section A - 2 separate heatmaps for PCR+ and PCR-
 
-- [ ] **S3** script_S1.R
+- [ ] **S3** script_S3.R *this script used to be called script_S1.R, I changed it for consistency*
 
 - [x] **S4** bulk_analysis_all.R, this takes all_A_long.Rdata and all_B_long.Rdata as input, and calculates some of the standard bulk metrics. The script then saves the results. This is equivalent to bulk_analysis_expanded.R. Then plot with FigS4.R.
 

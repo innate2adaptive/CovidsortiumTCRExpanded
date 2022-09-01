@@ -1,5 +1,4 @@
 #Annotation of COVID-19 expanded TCRs
-
 library(kernlab)
 library(igraph)
 library(stringdist)
@@ -7,21 +6,13 @@ library(tidyr)
 library(dplyr)
 library(data.table)
 library(pheatmap)
-#on Linux
-drive <- "/media/benny/data/"
-#on Windows
-drive<-"C:/users/Benny/"
 
+options(timeout = max(1000, getOption("timeout"))) # increasing timeout might be necessary to load the files
 
-#this is the path to the master files on my computer
-input_data<-"Dropbox/Temp (1)/COVID-19/Data/"
-
-#dir
-#working folder for collecting output
-#dir.create(paste0(drive,"Dropbox/R_temp/30_11_2021/"))
-folder_data<-"Dropbox\\Temp (1)\\Papers\\COVIDsortium\\TCR_paper\\data_for_paper\\"
-folder_fig<-"Dropbox\\Temp (1)\\Papers\\COVIDsortium\\TCR_paper\\figs\\"
-load(paste0(drive,input_data,"all_A_long.RData"))
+myURL<-"https://www.dropbox.com/s/a7ymcecnpomge2e/all_A_long.RData?raw=1"
+myConnection <- url(myURL)
+print(load(myConnection))
+close(myConnection)
 #plot number of reads per sample
 abundance<-all_A_long$total*all_A_long$proportion/1E6
 sample_ID<-paste(all_A_long$week_PCR,all_A_long$ID,sep="_")
@@ -29,7 +20,10 @@ sample_total<-aggregate(abundance,by=list(sample_ID),sum )
 
 rm(all_A_long)
 #betas
-load(paste0(drive,input_data,"all_B_long.RData"))
+myURL<-"https://www.dropbox.com/s/9kl9s4y775wam9z/all_B_long.RData?raw=1"
+myConnection <- url(myURL)
+print(load(myConnection))
+close(myConnection)
 #plot number of reads per sample
 abundance_B<-all_B_long$total*all_B_long$proportion/1E6
 sample_ID_B<-paste(all_B_long$week_PCR,all_B_long$ID,sep="_")
