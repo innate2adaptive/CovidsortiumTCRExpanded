@@ -46,15 +46,11 @@ script_4.R uses exp_AB_merge2.txt, which is the list of annotated TCRs. There is
 
 - [x] **2F** script_5.R - calculates and plots clustering
 
-- [ ] **Fig 3**
+- [ ] **Fig 3** - *I couldn't figure out how to use the existing script, so made a new one to do the same thing. Crashes on my laptop, so need to be done on big computer*
 
 - [ ] **Fig 4** Scripts from Cedric to add.
 
 - [ ] **Fig 5** Scripts? Data?
-
-#### Additional scripts
-
-Fig_1_remove_invariant.R removes MAIT and IkT cells from the expanded list.
 
 #### Supplementary
 
