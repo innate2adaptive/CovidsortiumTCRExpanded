@@ -3,38 +3,27 @@
 library(mgcv)
 library(tidyr)
 library(dplyr)
-#?tidyr
-#on Linux
-drive <- "/media/benny/data/"
-#on Windows
-drive<-"C:/"
-
-#this is the path to the master files on my computer
-input_data<-"Dropbox/Temp (1)/COVID-19/Data/"
-#dir<-dir(input_data)
-#dir
-#working folder for collecting output
-#folder<-"Dropbox/R_temp/07_07_2021/"
+library(ggplot2)
 
 #read dates of PCR positivity
-PCR_pos2<-read.table(file=paste0(drive,input_data,"PCR_positive.csv"),header=TRUE,stringsAsFactors = FALSE,colClasses=c("character", "numeric"),sep=",")
+PCR_pos2<-read.table(file="data/PCR_positive.csv",header=TRUE,stringsAsFactors = FALSE,colClasses=c("character", "numeric"),sep=",")
 #remove 241 which does not exist in TCR data
 PCR_pos1<-PCR_pos2[-27,]
 PCR_pos<-PCR_pos1$Week.first..
 names(PCR_pos)<-PCR_pos1[,1]
 rm(PCR_pos2)
 #PCR_pos
-#set chain
-chain<-"alpha"
-#OR
-chain<-"beta"
-#load total and expanded data either for alpha and beta. Combine at the end.
 
-if (chain=="alpha"){#Alpha
+for (chain in c("alpha", "beta")){
+#load total and expanded data either for alpha and beta. Combine at the end.
+if (chain=="alpha"){
 #load all data master file
-  load(paste0(drive,input_data,"data_tsv_alpha.Rdata"))
+  myURL <- "https://www.dropbox.com/s/93jzrddo291h202/data_tsv_alpha.Rdata?raw=1"
+  myConnection <- url(myURL)
+  print(load(myConnection))
+  close(myConnection)
 #load expanded TCRs
-  load( file = paste0(drive, input_data,"TCR_change_all_alpha.RData"))
+  load( file = "data/outpt_data/TCR_change_all_alpha.RData")
   TCR_change_HCW<-TCR_change_HCW_a
   data<-data_tsv_alpha
   rm(data_tsv_alpha)
@@ -43,9 +32,12 @@ if (chain=="alpha"){#Alpha
 
 #Beta
 if (chain=="beta"){
-load(paste0(drive,input_data,"data_tsv_beta.Rdata"))
+  myURL<-"https://www.dropbox.com/s/7osyel4pit0gayn/data_tsv_beta.Rdata?raw=1"
+  myConnection <- url(myURL)
+  print(load(myConnection))
+  close(myConnection)
 #load data on expanded TCRs
-load( file = paste0(drive, input_data, "TCR_change_all_beta.RData"))
+load( file = "data/outpt_data/TCR_change_all_beta.RData")
   TCR_change_HCW<-TCR_change_HCW_b
   data<-data_tsv_beta
   rm(data_tsv_beta)
@@ -150,14 +142,15 @@ if (chain=="beta"){
   #save this as the wide version of the expanded set of TCRS
   #save(exp_A_wide,file=paste0(drive,input_data,"exp_A_wide.RData"))
 }
+} # closes the loop over the two chains
 
 exp_AB_long<-rbind(exp_A_long,exp_B_long)
 exp_AB_wide<-rbind(exp_A_wide,exp_B_wide)
 
-save(exp_AB_long,file=paste0(drive,input_data,"exp_AB_long.RData"))
-write.csv(exp_AB_long,file=paste0(drive,input_data,"exp_AB_long.csv"))
+save(exp_AB_long,file="data/output_data/exp_AB_long.RData")
+write.csv(exp_AB_long,file="data/output_data/exp_AB_long.csv")
 
-save(exp_AB_wide,file=paste0(drive,input_data,"exp_AB_wide.RData"))
-write.csv(exp_AB_wide,file=paste0(drive,input_data,"exp_AB_wide.csv"))
+save(exp_AB_wide,file="data/output_data/exp_AB_wide.RData")
+write.csv(exp_AB_wide,file="data/output_data/exp_AB_wide.csv")
 ############################################################################
 #######################################################################
