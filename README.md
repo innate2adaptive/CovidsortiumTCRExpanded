@@ -18,9 +18,11 @@ Output plots in: output_figs/
 
 Need to run twice, once for alpha, and once for beta. Produces plots; and a list of up and downregulated TCRs, which is saved as "TCR_change_all_alpha.RData" and "TCR_change_all_beta.RData"
 
-*I am missing a script here that goes from TCR_change_all_[alpha/beta].RData to exp_AB_wide1.RData (?)*
+**to_wide_data.R** converts the TCR_change_all_a/b into the format of exp_AB_wide.RData (i.e. has the abundances for all time points for the expanding TCRs)
 
-On exp_AB_wide1.RData, you run Fig_1_remove_invariant.R to remove MAIT and IkT cells from the expanded list -> obtain exp_AB_wide3.RData
+**clean_wide_data.R** takes exp_AB_wide.RData and removes a few TCRs which are very high at -3 or -4 and then go down, because I think they are irrelevant. This provides  exp_AB_wide1.RData. The pGEN values were added manually to this.
+
+On exp_AB_wide1.RData (from DropBox, with manually annotated pGen), you run **Fig_1_remove_invariant.R** to remove MAIT and IkT cells from the expanded list -> obtain exp_AB_wide3.RData
 
 *I didn't have exp_AB_wide1.RData from Benny, so I used the version I had in my old repo*
 
@@ -38,7 +40,8 @@ On exp_AB_wide1.RData, you run Fig_1_remove_invariant.R to remove MAIT and IkT c
 
 - [x] **2D** script_4.R Section C. 
 
-*script_4.R uses exp_AB_merge2.txt, which I don't know where it is generated?*
+script_4.R uses exp_AB_merge2.txt, which is the list of annotated TCRs. There is no “script” for generating this. It is constructed semi-manually from the annotation data from Tao as well as what was in VDJdb and the Franics et al. paper.
+
 *script_4.R also uses summary_with_HLA.txt, which I did not have, so got from my other repo*
 
 - [x] **2E** script_4.R, Section A. Save heatmap and legend separately.
@@ -61,7 +64,7 @@ Fig_1_remove_invariant.R removes MAIT and IkT cells from the expanded list.
 
 - [x] **S2** script_2.R, Section A - 2 separate heatmaps for PCR+ and PCR-
 
-- [ ] **S3** script_S3.R *this script used to be called script_S1.R, I changed it for consistency*
+- [x] **S3** script_S3.R *this script used to be called script_S1.R, I changed it for consistency*
 
 - [x] **S4** bulk_analysis_all.R, this takes all_A_long.Rdata and all_B_long.Rdata as input, and calculates some of the standard bulk metrics. The script then saves the results. This is equivalent to bulk_analysis_expanded.R. Then plot with FigS4.R.
 

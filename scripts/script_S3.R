@@ -6,8 +6,11 @@ library(tidyr)
 library(dplyr)
 library(data.table)
 library(pheatmap)
+library(ggplot2)
+library(scales)
 
 options(timeout = max(1000, getOption("timeout"))) # increasing timeout might be necessary to load the files
+folder_plots<-"output_figures/"
 
 myURL<-"https://www.dropbox.com/s/a7ymcecnpomge2e/all_A_long.RData?raw=1"
 myConnection <- url(myURL)
@@ -30,29 +33,49 @@ sample_ID_B<-paste(all_B_long$week_PCR,all_B_long$ID,sep="_")
 sample_total_B<-aggregate(abundance_B,by=list(sample_ID_B),sum )
 rm(all_B_long)
 
-x<-c(rnorm(dim(sample_total)[1],1,0.1),rnorm(dim(sample_total_B)[1],2,0.1))
-y<-c(log10(sample_total$x),log10(sample_total_B$x))
+sample_total_A1<-sample_total
+sample_total_A1$chain<-"alpha"
 
-par(yaxt="s")
-plot(x,y,xlim=c(0,3),ylim=c(3,6),xaxt="n", pch=19,yaxt="n",xlab="",ylab="",cex=0.3)
-boxplot(list(log10(sample_total$x),log10(sample_total_B$x)),add=TRUE,col=NA,cex.names = 1.5, names=NA ,yaxt="n")
-axis(2,at = c(3,4,5),labels=c("1000","10000","100000"),cex.axis=1.5,las=2)
-axis(1, at=c(1,2), labels= c("alpha","beta"),cex.axis=1.5)
-imageSave(file=paste0(drive,folder_fig,"alpha&beta_total.png"))
+sample_total_B1<-sample_total_B
+sample_total_B1$chain<-"beta"
+
+all_counts<-rbind(sample_total_A1, sample_total_B1)
+
+p<-ggplot(all_counts) +
+  geom_jitter(aes(x = chain, y = x), width = 0.1) +
+  geom_boxplot(aes(x = chain, y = x), fill = NA, outlier.shape = NA) +
+  labs(x = "", y = "") +
+  scale_y_log10(breaks = c(10^3, 10^4, 10^5, 10^6),
+                labels = number_format(),
+                limits = c(10^3, 10^6)) +
+  theme_classic() + # keep the theme consistent for all our plots
+  theme(axis.text=element_text(size=20),
+        title=element_text(size=14)) 
+
+svg(paste0(folder_plots, "FigS3A.svg"))
+print(p)
+dev.off()
 
 rownames(sample_total)<-sample_total$Group.1
 rownames(sample_total_B)<-sample_total_B$Group.1
 
-x_1<-log10(sample_total[intersect(sample_total$Group.1,sample_total_B$Group.1),2])
-y_1<-log10(sample_total_B[intersect(sample_total$Group.1,sample_total_B$Group.1),2])
+paired_counts <- merge(sample_total, sample_total_B, by = "Group.1")
 
-10^median(x_1)
-10^median(y_1)
+p1<-ggplot(paired_counts) +
+  geom_point(aes(x = x.x, y = x.y), size = 2) +
+  labs(x = "TCR alpha depth", y = "TCR beta depth") + 
+  scale_y_log10(breaks = c(10^4, 10^4, 10^5),
+                labels = number_format(),
+                limits = c(10^4, 10^5.4)) +
+  scale_x_log10(breaks = c(10^4, 10^4, 10^5),
+                labels = number_format(),
+                limits = c(10^4, 10^5.4)) +
+  theme_classic() + # keep the theme consistent for all our plots
+  theme(axis.text=element_text(size=20),
+        title=element_text(size=14)) 
 
-par(mar=c(5,4,4,2))
-par(mar=c(5,8,4,2))
-plot(x_1,y_1,pch=18,xlab = "TCR alpha",ylab = "TCR beta",ylim=c(4,5.4),xlim=c(4,5.4),xaxt="n",yaxt="n",cex.lab=2,main="0.94")
-axis(1,at=c(4,5),c("10,000","100,000"),cex.axis=1.5)
-axis(2,at=c(4,5),c("10,000","100,000"),cex.axis=1.5,las=2)
-imageSave(file=paste0(drive,folder_fig,"alpha_v_beta.png"))
-cor.test(x_1,y_1, method = "spearman")
+svg(paste0(folder_plots, "FigS3B.svg"))
+print(p1)
+dev.off()
+
+cor.test(paired_counts$x.x,paired_counts$x.y, method = "spearman")
