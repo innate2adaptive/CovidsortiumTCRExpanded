@@ -46,7 +46,7 @@ script_4.R uses exp_AB_merge2.txt, which is the list of annotated TCRs. There is
 
 - [x] **2F** script_5.R - calculates and plots clustering
 
-- [ ] **Fig 3** - *I couldn't figure out how to use the existing script, so made a new one to do the same thing. Crashes on my laptop, so need to be done on big computer*
+- [ ] **Fig 3** - *I couldn't figure out how to use the existing script, so made a new one to do the same thing. I get slightly different results for non-expanded from what Benny has on the slide, whilst the expanded ones are identical. I cannot figure out what I am doing differently.*
 
 - [ ] **Fig 4** Scripts from Cedric to add.
 
