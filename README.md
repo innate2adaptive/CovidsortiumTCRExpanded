@@ -76,9 +76,7 @@ script_4.R uses exp_AB_merge2.txt, which is the list of annotated TCRs. There is
 
 - [x] **S11** script_4.R Section B
 
-- [ ] **S12** script_6.R - calculates clustering at various threshold and compares expanded vs non-expanded controls
-
-*(The script is ok, but crashes my laptop. Need to run it on big computer or cluster)*
+- [x] **S12** script_6.R - calculates clustering at various threshold and compares expanded vs non-expanded controls
 
 - [x] **S13** script_5.R - calculates and plots clustering
 

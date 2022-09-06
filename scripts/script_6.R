@@ -50,212 +50,6 @@ for (i in 1:10){
   c.b[[i]]<-kmb.c
 }
 
-### find average distance between pairs expanded TCRs
-# kma_exp.a<-kma_exp
-# kma_exp.a[lower.tri(kma_exp.a, diag=TRUE)]<--1
-# kma_exp.a<-as.vector(kma_exp.a)
-# kma_exp.a<-kma_exp.a[kma_exp.a>-1]
-# avg.a<-mean(kma_exp.a)
-# std.a<-sd(kma_exp.a)
-# 
-# kmb_exp.a<-kmb_exp
-# kmb_exp.a[lower.tri(kmb_exp.a, diag=TRUE)]<--1
-# kmb_exp.a<-as.vector(kmb_exp.a)
-# kmb_exp.a<-kmb_exp.a[kmb_exp.a>-1]
-# avg.b<-mean(kmb_exp.a)
-# std.b<-sd(kmb_exp.a)
-# 
-# kma_exp.a.noC<-kma_exp.noC
-# kma_exp.a.noC[lower.tri(kma_exp.a.noC, diag=TRUE)]<--1
-# kma_exp.a.noC<-as.vector(kma_exp.a.noC)
-# kma_exp.a.noC<-kma_exp.a.noC[kma_exp.a.noC>-1]
-# avg.a.noC<-mean(kma_exp.a.noC)
-# std.a.noC<-sd(kma_exp.a.noC)
-# 
-# kmb_exp.a.noC<-kmb_exp.noC
-# kmb_exp.a.noC[lower.tri(kmb_exp.a.noC, diag=TRUE)]<--1
-# kmb_exp.a.noC<-as.vector(kmb_exp.a.noC)
-# kmb_exp.a.noC<-kmb_exp.a.noC[kmb_exp.a.noC>-1]
-# avg.b.noC<-mean(kmb_exp.a.noC)
-# std.b.noC<-sd(kmb_exp.a.noC)
-# 
-# 
-# ### calculate stats about the pairwise distances
-# avg.c.a<-list()
-# avg.c.b<-list()
-# std.c.a<-list()
-# std.c.b<-list()
-# vec.c.a<-list()
-# vec.c.b<-list()
-# c.a<-list()
-# c.b<-list()
-# 
-# for (i in 1:10){
-#   kma.c<-kernelMatrix(sk, unlist(control_a[i]), unlist(control_a[i]))
-#   kmb.c<-kernelMatrix(sk, unlist(control_b[i]), unlist(control_b[i]))
-#   c.a[[i]]<-kma.c
-#   c.b[[i]]<-kmb.c
-# 
-#   copy<-kma.c 
-#   copy[lower.tri(copy, diag=TRUE)]<--1 # make the symmetric part of the kernel -1
-#   copy<-as.vector(copy) # vectorise
-#   copy<-copy[copy>-1] # remove one half of the kernel
-#   vec.c.a[[i]]<-copy
-#   a1<-mean(copy)
-#   s1<-sd(copy)
-#   avg.c.a<-c(avg.c.a, a1)
-#   std.c.a<-c(std.c.a, s1)
-# 
-#   copy<-kmb.c
-#   copy[lower.tri(copy, diag=TRUE)]<--1
-#   copy<-as.vector(copy)
-#   copy<-copy[copy>-1]
-#   vec.c.b[[i]]<-copy
-#   a1<-mean(copy)
-#   s1<-sd(copy)
-#   avg.c.b<-c(avg.c.b, a1)
-#   std.c.b<-c(std.c.b, s1)
-# }
-
-### plot average distances
-
-# avg.a.df<-data.frame(avg.a)
-# avg.a.df$type<-"data"
-# names(avg.a.df)[1]<-"avg"
-# 
-# avg.a.noC.df<-data.frame(avg.a.noC)
-# avg.a.noC.df$type<-"data.noC"
-# names(avg.a.noC.df)[1]<-"avg"
-# 
-# std.a.df<-data.frame(std.a)
-# std.a.df$type<-"data"
-# names(std.a.df)[1]<-"std"
-# 
-# avg.a.df$std<-std.a.df$std
-# 
-# std.a.noC.df<-data.frame(std.a.noC)
-# std.a.noC.df$type<-"data"
-# names(std.a.noC.df)[1]<-"std"
-# 
-# avg.a.noC.df$std<-std.a.noC.df$std
-# 
-# avg.c.a.df<-data.frame(unlist(avg.c.a))
-# names(avg.c.a.df)[1]<-"avg"
-# avg.c.a.df$type<-"control"
-# 
-# std.c.a.df<-data.frame(unlist(std.c.a))
-# names(std.c.a.df)[1]<-"std"
-# std.c.a.df$type<-"control"
-# 
-# avg.c.a.df$std<-std.c.a.df$std
-# 
-# a.avg<-rbind(avg.a.df, avg.a.noC.df, avg.c.a.df)
-# a.avg$avg<-as.numeric(a.avg$avg)
-# 
-# mycolors<-c("black", "green", "red")
-# ggplot(a.avg, aes(y=avg, x=type, color=type))+
-#   geom_boxplot(fill=NA) +
-#   geom_point(size=3) + 
-#   ggtitle("alpha average distance") + 
-#   scale_color_manual(values = mycolors)
-#   # geom_errorbar(aes(ymin=avg-std, ymax=avg+std))
-# 
-# avg.b.df<-data.frame(avg.b)
-# avg.b.df$type<-"data"
-# names(avg.b.df)[1]<-"avg"
-# 
-# std.b.df<-data.frame(std.b)
-# std.b.df$type<-"data"
-# names(std.b.df)[1]<-"std"
-# 
-# avg.b.df$std<-std.b.df$std
-# 
-# avg.b.noC.df<-data.frame(avg.b.noC)
-# avg.b.noC.df$type<-"data.noC"
-# names(avg.b.noC.df)[1]<-"avg"
-# 
-# std.b.noC.df<-data.frame(std.b.noC)
-# std.b.noC.df$type<-"data.noC"
-# names(std.b.noC.df)[1]<-"std"
-# 
-# avg.b.noC.df$std<-std.b.noC.df$std
-# 
-# avg.c.b.df<-data.frame(unlist(avg.c.b))
-# names(avg.c.b.df)[1]<-"avg"
-# avg.c.b.df$type<-"control"
-# 
-# std.c.b.df<-data.frame(unlist(std.c.b))
-# names(std.c.b.df)[1]<-"std"
-# std.c.b.df$type<-"control"
-# 
-# avg.c.b.df$std<-std.c.b.df$std
-# 
-# b.avg<-rbind(avg.b.df, avg.b.noC.df, avg.c.b.df)
-# b.avg$avg<-as.numeric(b.avg$avg)
-# 
-# ggplot(b.avg, aes(y=avg, x=type, color=type))+
-#   geom_boxplot(fill=NA) +
-#   geom_point(size=3) + 
-#   ggtitle("beta average distance") + 
-#   scale_color_manual(values = mycolors)
-# # geom_errorbar(aes(ymin=avg-std, ymax=avg+std))
-# 
-
-# ### density plots of distances
-# distance_vectors.c.a<-data.frame()
-# for (i in 1:10){
-#   c1<-data.frame(vec.c.a[[i]])
-#   c1$type<-paste("control", i, sep="")
-#   distance_vectors.c.a<-rbind(distance_vectors.c.a, c1)
-# }
-# 
-# dist_vec.a<-data.frame(kma_exp.a)
-# dist_vec.a$type<-"data"
-# dist_vec.a.noC<-data.frame(kma_exp.a.noC)
-# dist_vec.a.noC$type<-"data.noC"
-# colnames(dist_vec.a)<-c("distances", "type")
-# colnames(dist_vec.a.noC)<-c("distances", "type")
-# colnames(distance_vectors.c.a)<-c("distances", "type")
-# distance_vectors.a<-rbind(distance_vectors.c.a,dist_vec.a, dist_vec.a.noC)
-# 
-# cscale = unlist(lapply(levels(as.factor(distance_vectors.a$type)), function(x){
-#   if (grepl("control", x, fixed = TRUE)){
-#     return("grey")
-#   }
-#   else if (x == "data.noC"){
-#     return("red")
-#   }
-#   else{
-#     return("blue")
-#   }
-# }))
-# 
-# names(cscale)<-levels(as.factor(distance_vectors.a$type))
-# 
-# ggplot(distance_vectors.a, aes(distances)) +
-#   stat_ecdf(aes(x = distances, col=type)) +
-#   scale_color_manual(values = cscale) + ylim(0.6,1) + theme_bw()
-# 
-# distance_vectors.c.b<-data.frame()
-# for (i in 1:6){
-#   c1<-data.frame(vec.c.b[[i]])
-#   c1$type<-paste("control", i, sep="")
-#   distance_vectors.c.b<-rbind(distance_vectors.c.b, c1)
-# }
-# 
-# dist_vec.b<-data.frame(kmb_exp.a)
-# dist_vec.b$type<-"data"
-# dist_vec.b.noC<-data.frame(kmb_exp.a)
-# dist_vec.b.noC$type<-"data.noC"
-# colnames(dist_vec.b)<-c("distances", "type")
-# colnames(dist_vec.b.noC)<-c("distances", "type")
-# colnames(distance_vectors.c.b)<-c("distances", "type")
-# distance_vectors.b<-rbind(distance_vectors.c.b,dist_vec.b,dist_vec.b.noC)
-# 
-# ggplot(distance_vectors.b, aes(distances)) +
-#   stat_ecdf(aes(x = distances, col=type)) +
-#   scale_color_manual(values = cscale) + theme_bw()
-
 ### Look at how the clustering performs at different thresholds
 ### various metrics for clustering at different thresholds
 
@@ -719,20 +513,27 @@ plot_cluster_size_barplot<-function(counts){
 
 perc.a<-prepare_results(perc.clus.a.c, perc.clus.a)
 p.perc.a<-plot_results(perc.a)
-p.perc.a +
+pa <-p.perc.a +
   geom_vline(xintercept = 0.76, lty="dashed") +
   xlab("threshold set for clustering") +
   ylab("Proportion clustering") +
   ggtitle("Proportion of CDR3s in clusters, alpha") + 
-  theme_bw()
+  theme_classic() + # keep the theme consistent for all our plots
+  theme(axis.text=element_text(size=20),
+        axis.title=element_text(size=16),
+        title=element_text(size=14))
 
-clus.size.count.a.mythresh<-clus.size.count.a.all[clus.size.count.a.all$thresh == 0.76,]
+svg("output_figures/FigS12_alpha.svg")
+print(pa)
+dev.off()
 
-pa_lineplot<-plot_cluster_size_lineplot(clus.size.count.a.mythresh)
-pa_lineplot + ggtitle("CDR3a, th = 0.76, clustering profile")
+# clus.size.count.a.mythresh<-clus.size.count.a.all[clus.size.count.a.all$thresh == 0.76,]
 
-pa_barplot<-plot_cluster_size_barplot(clus.size.count.a.mythresh)
-pa_barplot + ggtitle("CDR3a, th = 0.76, clustering profile")
+# pa_lineplot<-plot_cluster_size_lineplot(clus.size.count.a.mythresh)
+# pa_lineplot + ggtitle("CDR3a, th = 0.76, clustering profile")
+# 
+# pa_barplot<-plot_cluster_size_barplot(clus.size.count.a.mythresh)
+# pa_barplot + ggtitle("CDR3a, th = 0.76, clustering profile")
 
 # 
 # perc.large.a<-prepare_results(perc.clus.large.a.c, perc.clus.large.a)
@@ -745,20 +546,27 @@ pa_barplot + ggtitle("CDR3a, th = 0.76, clustering profile")
 
 perc.b<-prepare_results(perc.clus.b.c, perc.clus.b)
 p.perc.b<-plot_results(perc.b)
-p.perc.b +
+pb<-p.perc.b +
   geom_vline(xintercept = 0.72, lty="dashed") +
   xlab("threshold set for clustering") +
   ylab("Proportion clustering") +
   ggtitle("Proportion of CDR3s in clusters, beta") +
-  theme_bw()
+  theme_classic() + # keep the theme consistent for all our plots
+  theme(axis.text=element_text(size=20),
+        axis.title=element_text(size=16),
+        title=element_text(size=14))
 
-clus.size.count.b.mythresh<-clus.size.count.b.all[clus.size.count.b.all$thresh == 0.72,]
+svg("output_figures/FigS12_beta.svg")
+print(pb)
+dev.off()
 
-pb_lineplot<-plot_cluster_size_lineplot(clus.size.count.b.mythresh)
-pb_lineplot + ggtitle("CDR3b, th = 0.72, clustering profile")
-
-pb_barplot<-plot_cluster_size_barplot(clus.size.count.b.mythresh)
-pb_barplot + ggtitle("CDR3b, th = 0.72, clustering profile")
+# clus.size.count.b.mythresh<-clus.size.count.b.all[clus.size.count.b.all$thresh == 0.72,]
+# 
+# pb_lineplot<-plot_cluster_size_lineplot(clus.size.count.b.mythresh)
+# pb_lineplot + ggtitle("CDR3b, th = 0.72, clustering profile")
+# 
+# pb_barplot<-plot_cluster_size_barplot(clus.size.count.b.mythresh)
+# pb_barplot + ggtitle("CDR3b, th = 0.72, clustering profile")
 
 # perc.large.b<-prepare_results(perc.clus.large.b.c, perc.clus.large.b)
 # p.perc.large.b<-plot_results(perc.large.b)
