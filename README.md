@@ -20,9 +20,9 @@ Need to run twice, once for alpha, and once for beta. Produces plots; and a list
 
 **to_wide_data.R** converts the TCR_change_all_a/b into the format of exp_AB_wide.RData (i.e. has the abundances for all time points for the expanding TCRs)
 
-**clean_wide_data.R** takes exp_AB_wide.RData and removes a few TCRs which are very high at -3 or -4 and then go down, because I think they are irrelevant. This provides  exp_AB_wide1.RData. The pGEN values were added manually to this. The version with manually added pGen is found in data/ - *adapted, but cannot run because I need to run to_wide_data.R first*
+**clean_wide_data.R** takes exp_AB_wide.RData and removes a few TCRs which are very high at -3 or -4 and then go down, because I think they are irrelevant. This provides  exp_AB_wide1.RData. The pGEN values were added manually to this. The version with manually added pGen is found in data/
 
-On exp_AB_wide1.RData (from data/output_data/ and not from data/, so using the version without manually annotated pGen), you run **Fig_1_remove_invariant.R** to remove MAIT and IkT cells from the expanded list -> obtain exp_AB_wide3.RData - *adapted, but cannot run because I need to run to_wide_data.R and clean_wide_data.R first*
+On exp_AB_wide1.RData (from data/output_data/ and not from data/, so using the version without manually annotated pGen), you run **Fig_1_remove_invariant.R** to remove MAIT and IkT cells from the expanded list -> obtain exp_AB_wide3.RData
 
 *The new axes here are shifted by a power of 2. When I plot with Benny's plotting without renaming axes, I get the same axes as on my new plots. Was there a reason Benny had shifted the axes by a power of 2?*
 
