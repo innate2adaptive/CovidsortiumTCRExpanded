@@ -20,6 +20,7 @@ counts_all<-as.matrix(exp_AB[,10:18])
 IDs<-unique(exp_AB$ID)
 max<-max(counts_all,na.rm=TRUE)
 
+
 results<-data.frame()
 
 i<-1
@@ -120,6 +121,29 @@ p1<-ggplot(results[(results$ID == 195),]) +
 svg(paste0(folder_plots, "Fig1E_dynamics_HCW195.svg"))
 print(p1)
 dev.off()
+
+# Fig S7
+
+p1a<-ggplot(results[(results$ID == 195) & (results$variable %in% c("proportion_.2", "proportion_14")), ]) +
+  scale_x_discrete(breaks = c("proportion_.2", "proportion_14"),
+                   labels = c("Baseline", "Week 14")) +
+  # scale_y_continuous(limits = c(0,6000)) +
+  # geom_point(aes(x = variable, y = value, col = chain)) +
+  geom_line(aes(x = variable, y = value, group = tcrname, col = chain), 
+            data = results[(results$ID == 195) & (!is.na(results$value)) & (results$variable %in% c("proportion_.2", "proportion_14")),]) +
+  scale_color_manual(values = c(alpha = "brown2", beta="navyblue")) +
+  labs(x = "weeks", y = "TCR/million") +
+  theme_classic() +
+  theme(axis.text=element_text(size=20),
+        axis.title=element_text(size=16),
+        title=element_text(size=14))
+
+svg(paste0(folder_plots, "FigS7_dynamics_HCW195_week-2_14.svg"))
+print(p1a)
+dev.off()
+
+kruskal.test(results[(results$ID == 195) & (results$variable %in% c("proportion_.2", "proportion_14")),]$value,
+             results[(results$ID == 195) & (results$variable %in% c("proportion_.2", "proportion_14")), ]$variable)
 
 # Fig 1F
 
