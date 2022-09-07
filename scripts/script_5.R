@@ -49,8 +49,8 @@ vdj.cov.b<-vdj.cov[vdj.cov$Gene=="TRB",]
 all.ann.a<-unique(c(fs.a$CDR3, tao.a$CDR3, vdj.cov.a$CDR3))
 all.ann.b<-unique(c(fs.b$CDR3, tao.b$CDR3, vdj.cov.b$CDR3))
 
-## load table where epitope names have been cleaned up (from Benny, otherwise same as exp_AB_merge_2)
-ann<-read.table("data/exp_AB_merge_2_clean.txt", header=TRUE)
+## load table where epitope names have been cleaned up
+ann<-read.table("data/exp_AB_merge_2.txt", header=TRUE)
 
 exp.a$ann<-unlist(lapply(exp.a$junction_aa, function(x) ifelse(x %in% all.ann.a, "ann", "not.ann")))
 exp.b$ann<-unlist(lapply(exp.b$junction_aa, function(x) ifelse(x %in% all.ann.b, "ann", "not.ann")))
@@ -126,60 +126,60 @@ nodes.b<-igraph::as_data_frame(km_graph_b, what="vertices")
 
 ## investigating clusters that are made of only one ID - alpha
 
-clusters.a<-names(table(nodes.a$clus)[table(nodes.a$clus) > 2])
-nodes.clus.a<-nodes.a[nodes.a$clus %in% clusters.a,]
-
-for (c in clusters.a){
-  s<-nodes.clus.a[nodes.clus.a$clus == c,]
-  ids<-unique(s$ID)
-  if (length(ids) == 1){
-    print(paste("cluster", c, "composed of single ID:", ids, ", size =", dim(s)[1], ", unique CDRs:", length(unique(s$cdr3))))
-  }
-}
+# clusters.a<-names(table(nodes.a$clus)[table(nodes.a$clus) > 2])
+# nodes.clus.a<-nodes.a[nodes.a$clus %in% clusters.a,]
+# 
+# for (c in clusters.a){
+#   s<-nodes.clus.a[nodes.clus.a$clus == c,]
+#   ids<-unique(s$ID)
+#   if (length(ids) == 1){
+#     print(paste("cluster", c, "composed of single ID:", ids, ", size =", dim(s)[1], ", unique CDRs:", length(unique(s$cdr3))))
+#   }
+# }
 
 ## investigating clusters that are made of only one ID - beta
 
-clusters<-names(table(nodes.b$clus)[table(nodes.b$clus) > 2])
-nodes.clus<-nodes.b[nodes.b$clus %in% clusters,]
-
-for (c in clusters){
-  s<-nodes.clus[nodes.clus$clus == c,]
-  ids<-unique(s$ID)
-  if (length(ids) == 1){
-    print(paste("cluster", c, "composed of single ID:", ids, ", size =", dim(s)[1], ", unique CDRs:", length(unique(s$cdr3))))
-  }
-}
-
-interesting.ids<-c(90, 153, 175, 267, 268, 324)
-
-counts<-data.frame(table(nodes.b$ID))
-names(counts)<-c("ID", "cdr3.count")
-
-counts$interesting.ids<-unlist(lapply(counts$ID,
-                                       function(x) ifelse(x %in% interesting.ids, "yes", "no")))
-
-ggplot(counts, aes(x = interesting.ids, y = cdr3.count, color = ID, group = interesting.ids)) + 
-  geom_boxplot(width = 0.5, fill = NA) + geom_jitter(width = 0.1, size = 3)
-
-interesting.clusters<-c(523, 556, 558, 1684, 3191) # only keeping clusters > 4
-
-mycdr3s<-list()
-
-for (c in interesting.clusters){
-  s<-nodes.b[nodes.b$clus == c,]
-  cdr3s<-unique(s$cdr3)
-  mycdr3<-list(cdr3s)
-  names(mycdr3)<-c(c)
-  mycdr3s<-c(mycdr3s, mycdr3)
-}
+# clusters<-names(table(nodes.b$clus)[table(nodes.b$clus) > 2])
+# nodes.clus<-nodes.b[nodes.b$clus %in% clusters,]
+# 
+# for (c in clusters){
+#   s<-nodes.clus[nodes.clus$clus == c,]
+#   ids<-unique(s$ID)
+#   if (length(ids) == 1){
+#     print(paste("cluster", c, "composed of single ID:", ids, ", size =", dim(s)[1], ", unique CDRs:", length(unique(s$cdr3))))
+#   }
+# }
+# 
+# interesting.ids<-c(90, 153, 175, 267, 268, 324)
+# 
+# counts<-data.frame(table(nodes.b$ID))
+# names(counts)<-c("ID", "cdr3.count")
+# 
+# counts$interesting.ids<-unlist(lapply(counts$ID,
+#                                        function(x) ifelse(x %in% interesting.ids, "yes", "no")))
+# 
+# ggplot(counts, aes(x = interesting.ids, y = cdr3.count, color = ID, group = interesting.ids)) + 
+#   geom_boxplot(width = 0.5, fill = NA) + geom_jitter(width = 0.1, size = 3)
+# 
+# interesting.clusters<-c(523, 556, 558, 1684, 3191) # only keeping clusters > 4
+# 
+# mycdr3s<-list()
+# 
+# for (c in interesting.clusters){
+#   s<-nodes.b[nodes.b$clus == c,]
+#   cdr3s<-unique(s$cdr3)
+#   mycdr3<-list(cdr3s)
+#   names(mycdr3)<-c(c)
+#   mycdr3s<-c(mycdr3s, mycdr3)
+# }
 
 ### now check that really the clusters are made of cdr3s from the ID I think
 
-for (c in interesting.clusters){
-  cdr3s<-mycdr3s[as.character(c)]
-  s<-exp_AB_wide3[exp_AB_wide3$junction_aa %in% unlist(cdr3s),]
-  print(paste("cdr3s in cluster", c, "are from IDs", unique(s$ID)))
-}
+# for (c in interesting.clusters){
+#   cdr3s<-mycdr3s[as.character(c)]
+#   s<-exp_AB_wide3[exp_AB_wide3$junction_aa %in% unlist(cdr3s),]
+#   print(paste("cdr3s in cluster", c, "are from IDs", unique(s$ID)))
+# }
 
 
 # nodes.a.wc<-igraph::as_data_frame(km_graph_a.wc, what="vertices")
@@ -350,24 +350,24 @@ g.b.s<-plot_all(g.b.s, col_vector, "beta.noctrl_3orMore")
 
 # print sequence logos
 
-g.a.17<-igraph::induced_subgraph(g.a.s, V(g.a.s)[V(g.a.s)$clus==17])
-
-plot(g.a.17, edge.width=2, vertex.label=NA, vertex.size=7,
-     layout = layout.kamada.kawai,
-     vertex.shape="pie", vertex.pie=vertex_attr(g.a.17, "pie.values"))
-
-align_a17 <- msa(unlist(unique(V(g.a.17)$cdr3)),type="protein")
-conMat_as_u<-consensusMatrix(align_a17)
-ggseqlogo(conMat_as_u, method="probability")
-
-align_a17.1 <- msa(unlist(V(g.a.17)$cdr3),type="protein")
-conMat_as<-consensusMatrix(align_a17.1)
-ggseqlogo(conMat_as, method="probability")
-
-a17<-igraph::as_data_frame(g.a.17, what="vertices")
-View(a17)
-
-dcast(a17, ID~c(ann,cd4_cd8, epitope))
+# g.a.17<-igraph::induced_subgraph(g.a.s, V(g.a.s)[V(g.a.s)$clus==17])
+# 
+# plot(g.a.17, edge.width=2, vertex.label=NA, vertex.size=7,
+#      layout = layout.kamada.kawai,
+#      vertex.shape="pie", vertex.pie=vertex_attr(g.a.17, "pie.values"))
+# 
+# align_a17 <- msa(unlist(unique(V(g.a.17)$cdr3)),type="protein")
+# conMat_as_u<-consensusMatrix(align_a17)
+# ggseqlogo(conMat_as_u, method="probability")
+# 
+# align_a17.1 <- msa(unlist(V(g.a.17)$cdr3),type="protein")
+# conMat_as<-consensusMatrix(align_a17.1)
+# ggseqlogo(conMat_as, method="probability")
+# 
+# a17<-igraph::as_data_frame(g.a.17, what="vertices")
+# View(a17)
+# 
+# dcast(a17, ID~c(ann,cd4_cd8, epitope))
 
 #####
 # 
