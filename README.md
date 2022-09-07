@@ -53,6 +53,8 @@ script_4.R uses exp_AB_merge2.txt, which is the list of annotated TCRs. There is
 
 - [ ] **Fig 5** Scripts? Data?
 
+*Found LCMV data on DropBox. Difference between different codes and _UMI.csv vs _freq.csv?*
+
 #### Supplementary
 
 - [x] **S1** FACS Plots from Michal - *they are a little pixelated, is there another version?*

@@ -14,6 +14,8 @@ names(PCR_pos)<-PCR_pos1[,1]
 rm(PCR_pos2)
 #PCR_pos
 
+options(timeout = max(1000, getOption("timeout")))
+
 for (chain in c("alpha", "beta")){
 #load total and expanded data either for alpha and beta. Combine at the end.
 if (chain=="alpha"){
@@ -23,7 +25,7 @@ if (chain=="alpha"){
   print(load(myConnection))
   close(myConnection)
 #load expanded TCRs
-  load( file = "data/outpt_data/TCR_change_all_alpha.RData")
+  load( file = "data/output_data/TCR_change_all_alpha.RData")
   TCR_change_HCW<-TCR_change_HCW_a
   data<-data_tsv_alpha
   rm(data_tsv_alpha)
@@ -37,7 +39,7 @@ if (chain=="beta"){
   print(load(myConnection))
   close(myConnection)
 #load data on expanded TCRs
-load( file = "data/outpt_data/TCR_change_all_beta.RData")
+load( file = "data/output_data/TCR_change_all_beta.RData")
   TCR_change_HCW<-TCR_change_HCW_b
   data<-data_tsv_beta
   rm(data_tsv_beta)
