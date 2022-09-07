@@ -2,14 +2,20 @@
 
 library(ggplot2)
 library(reshape)
+library(dplyr)
 
 sharing<-readRDS("data/downloaded_data/Emerson_sharing_aa.rds")
 load("data/output_data/exp_AB_wide3.RData")
 
 exp_b<-exp_AB_wide3[exp_AB_wide3$chain == "beta",] # emerson set only has beta
-exp_b<-exp_b[!duplicated(exp_b[,c("junction_aa")]),]
 
-sharing_exp<-merge(exp_b, sharing, by.x = "junction_aa", by.y = "aminoAcid", all.x = TRUE)
+rm(exp_AB_wide3)
+
+sharing_exp<-merge(exp_b, sharing, by.x = "junction_aa", by.y = "aminoAcid", all.x = TRUE) # add sharing info
+sharing_exp[is.na(sharing_exp$sharing_level),]$sharing_level<-0
+dim(sharing_exp[sharing_exp$sharing_level >= 2,]) # 2,903 as in paper
+
+rm(exp_b)
 
 options(timeout = max(1000, getOption("timeout"))) # increasing timeout might be necessary to load the files
 
@@ -18,11 +24,14 @@ myConnection <- url(myURL)
 print(load(myConnection))
 close(myConnection)
 
-all_B_long1<-all_B_long[!duplicated(all_B_long[,c("junction_aa")]),]
-non_exp_B<-all_B_long1[!(all_B_long1$junction_aa %in% unique(exp_b$junction_aa)),]
-sharing_ctrl_B<-merge(non_exp_B, sharing, by.x = "junction_aa", by.y = "aminoAcid", all.x = TRUE)
 
+all_B_long$ID<-as.numeric(as.character(all_B_long$ID))
+nonexp_B_long<-anti_join(all_B_long, sharing_exp, by=c("decombinator_id", "ID")) # remove expanded from the list
 rm(all_B_long)
+sharing_ctrl_B<-merge(nonexp_B_long, sharing, by.x = "junction_aa", by.y = "aminoAcid", all.x = TRUE) # add sharing info
+sharing_ctrl_B[is.na(sharing_ctrl_B$sharing_level),]$sharing_level<-0
+dim(sharing_ctrl_B[sharing_ctrl_B$sharing_level >= 2,]) # 
+
 rm(sharing)
 
 sharing_ctrl_B$set<-"ctrl"
