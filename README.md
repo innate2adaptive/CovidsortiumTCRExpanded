@@ -40,13 +40,14 @@ On exp_AB_wide1.RData (from data/output_data/ and not from data/, so using the v
 
 script_4.R uses exp_AB_merge2.txt, which is the list of annotated TCRs. There is no “script” for generating this. It is constructed semi-manually from the annotation data from Tao as well as what was in VDJdb and the Franics et al. paper.
 
-*script_4.R also uses summary_with_HLA.txt, which I did not have, so got from my other repo - just got most updated version from Benny, need to re-run because small difference*
+*script_4.R also uses summary_with_HLA.txt - just got most updated version from Benny, need to re-run because small difference*
 
 - [x] **2E** script_4.R, Section A. Save heatmap and legend separately.
 
 - [x] **2F** script_5.R - calculates and plots clustering
 
 - [x] **Fig 3** - *I couldn't figure out how to use the existing script, so made a new one to do the same thing. I get slightly different results for non-expanded from what Benny has on the slide, whilst the expanded ones are identical. I cannot figure out what I am doing differently.*
+
 *Note: Emerson data does not fit on my DropBox nor on git, so I don't know where to save it*
 
 - [x] **Fig 4** Scripts from Cedric to add.
