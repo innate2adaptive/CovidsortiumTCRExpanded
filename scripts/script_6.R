@@ -17,8 +17,8 @@ folder_data<-"data/output_data/"  # don't save to dropbox, so if people use this
 
 # load data - using low p(gen) controls
 load(paste(folder_data, "exp_AB_wide3.RData", sep=""))
-load("data/control_alpha_1.RData") # this is a set of non-expanded sequences selected at random (Benny's script)
-load("data/control_beta_1.RData") # this is a set of non-expanded sequences selected at random (Benny's script)
+load("data/output_data/control_alpha_2.RData") # this is a set of non-expanded sequences selected at random (Benny's script)
+load("data/output_data/control_beta_2.RData") # this is a set of non-expanded sequences selected at random (Benny's script)
 
 exp_a<-exp_AB_wide3[exp_AB_wide3$chain=="alpha",]
 exp_b<-exp_AB_wide3[exp_AB_wide3$chain=="beta",]

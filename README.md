@@ -5,7 +5,7 @@ Scripts that produce data and figures for the COVIDsortium TCR paper (Aug 2022)
 
 Current version of MS is Word file TCR_COV2_V5.docx; Current main figures : Figures_V5.pptx; Current supplementary figures : Figures_S_V4.pptx 
 
-*Figures_V4 and S_V2 are before restyling, V5 and S_V3 has restyling (mostly) done, S_V4 is without figure S10*
+*Figures_V4 and S_V2 are before restyling, V5 and S_V3 has restyling (mostly) done, S_V4 is without figure S10.  Note that figures still save with same numbering as in S_V3*
 
 Data can be found at: https://www.dropbox.com/sh/neg3lpofw85l9ng/AAAw-HckR7LYxKz7TMNQ90zca?dl=0
 
@@ -42,13 +42,15 @@ On exp_AB_wide1.RData (from data/output_data/ and not from data/, so using the v
 
 script_4.R uses exp_AB_merge2.txt, which is the list of annotated TCRs. There is no “script” for generating this. It is constructed semi-manually from the annotation data from Tao as well as what was in VDJdb and the Franics et al. paper.
 
-*script_4.R also uses summary_with_HLA.txt - just got most updated version from Benny, need to re-run because small difference*
+*script_4.R also uses summary_with_HLA.txt - just got most updated version from Benny, need to re-run because small difference.*
 
 - [x] **2E** script_4.R, Section A. Save heatmap and legend separately.
 
 - [x] **2F** script_5.R - calculates and plots clustering
 
-- [x] **Fig 3** - *I couldn't figure out how to use the existing script, so made a new one to do the same thing. I get slightly different results for non-expanded from what Benny has on the slide, whilst the expanded ones are identical. I cannot figure out what I am doing differently.*
+- [x] **Fig 3** - *I couldn't figure out how to use the existing script, so made a new one to do the same thing. Uses controls from unique, with duplicates, as comparison (I think this is the way that Erez had originally done it)* - emerson2.R
+
+emerson1.R uses the whole non-expanded set to generate the same plot.
 
 *Note: Emerson data does not fit on my DropBox nor on git, so I don't know where to save it*
 
@@ -56,7 +58,7 @@ script_4.R uses exp_AB_merge2.txt, which is the list of annotated TCRs. There is
 
 - [ ] **Fig 5** Scripts? Data? *Benny to send*
 
-*Found LCMV data on DropBox. Difference between different codes and _UMI.csv vs _freq.csv?*
+*Found LCMV data on DropBox. 5B is plotted and looks correct, I still need to figure out 5C*
 
 #### Supplementary
 
@@ -82,7 +84,11 @@ script_4.R uses exp_AB_merge2.txt, which is the list of annotated TCRs. There is
 
 - [x] **S11** script_6.R - calculates clustering at various threshold and compares expanded vs non-expanded controls
 
-**controls_long.R** generates the controls - *adapted, needs to be re-run and need to re-run bulk analysis as well as controls were made on the exp_AB_wide1*
+*This currently uses the controls that are taken from unique CDR3s*
+
+**controls_long.R** generates the controls from unique CDR3s. These are the controls used in the current figures - *adapted, needs to be re-run and need to re-run bulk analysis as well as controls were made on the exp_AB_wide1*
+
+**contronls_long_1.R** generates the controls slightly differently, by taking unique dcb_id/HCW ID combinations, rather than unique cdr3s. 
 
 - [x] **S12** script_5.R - calculates and plots clustering
 

@@ -78,7 +78,7 @@ svg("output_figures/Fig5b_abundance_TCR_LCMV.svg")
 print(p)
 dev.off()
 
-## Section B - compare direct and inference methods
+## Section B - compare direct and inference methods - This still does not work
 
 # merge naive to measure sharing levels
 

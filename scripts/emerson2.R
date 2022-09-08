@@ -7,7 +7,7 @@ library(dplyr)
 sharing_ems<-readRDS("data/downloaded_data/Emerson_sharing_aa.rds")
 load("data/output_data/exp_AB_wide3.RData")
 
-exp_b<-exp_AB_wide3[exp_AB_wide3$chain == "beta",] # emerson set only has beta
+exp_b<-exp_AB_wide3[(exp_AB_wide3$chain == "beta"),] # emerson set only has beta
 # exp_b<-exp_b[!duplicated(exp_b[,c("junction_aa")]),]
 
 rm(exp_AB_wide3)
@@ -15,47 +15,32 @@ rm(exp_AB_wide3)
 # merge with sharing - adds a column which says how many emerson individuals the cdr3 is found in
 sharing_exp<-merge(exp_b, sharing_ems, by.x = "junction_aa", by.y = "aminoAcid", all.x = TRUE) # add sharing info
 sharing_exp[is.na(sharing_exp$sharing_level),]$sharing_level<-0
-dim(sharing_exp[sharing_exp$sharing_level >= 2,]) # 2,903 as in paper
+dim(sharing_exp[sharing_exp$sharing_level >= 2,]) # 2903 as in paper
 
 rm(exp_b)
 
-options(timeout = max(1000, getOption("timeout"))) # increasing timeout might be necessary to load the files
-
-myURL<-"https://www.dropbox.com/s/9kl9s4y775wam9z/all_B_long.RData?raw=1"
-myConnection <- url(myURL)
-print(load(myConnection))
-close(myConnection)
-
-# the data is in long format, so first I keep only one entry for each tcr in each patient (here I have multiple entries for multiple timepoints)
-all_B_long1<-all_B_long[!(duplicated(all_B_long[, c("decombinator_id", "ID")])),]
-rm(all_B_long)
-# all_B_long1<-all_B_long1[!duplicated(all_B_long1[,c("junction_aa")]),]
-
-all_B_long1$ID<-as.character(all_B_long1$ID)
-sharing_exp$ID<-as.character(sharing_exp$ID)
-nonexp_B_long<-anti_join(all_B_long1, sharing_exp, by=c("decombinator_id", "ID")) # remove expanded from the list
-rm(all_B_long1)
-
-# nonexp_B_long<-nonexp_B_long[!duplicated(nonexp_B_long$junction_aa),]
+load("data/control_beta_1.RData")
+ctrl<-data.frame(control_b[[1]])
+colnames(ctrl)<-c("junction_aa")
+# ctrl<-data.frame(ctrl[!duplicated(ctrl[,c("junction_aa")]),])
+# colnames(ctrl)<-c("junction_aa")
 
 # merge with sharing - adds a column which says how many emerson individuals the cdr3 is found in
-sharing_ctrl_B<-merge(nonexp_B_long, sharing_ems, by.x = "junction_aa", by.y = "aminoAcid", all.x = TRUE) # add sharing info
+sharing_ctrl_B<-merge(ctrl, sharing_ems, by.x = "junction_aa", by.y = "aminoAcid", all.x = TRUE) # add sharing info
 sharing_ctrl_B[is.na(sharing_ctrl_B$sharing_level),]$sharing_level<-0
 dim(sharing_ctrl_B[sharing_ctrl_B$sharing_level >= 2,]) # 
-
-# rm(sharing)
 
 sharing_ctrl_B$set<-"ctrl"
 sharing_exp$set<-"exp"
 
-sharing<-rbind(sharing_ctrl_B[c("junction_aa", "sharing_level", "ID", "decombinator_id", "set")], sharing_exp[c("junction_aa", "sharing_level", "ID", "decombinator_id", "set")])
+sharing<-rbind(sharing_ctrl_B[c("junction_aa", "sharing_level", "set")], sharing_exp[c("junction_aa", "sharing_level", "set")])
 
 counts<-data.frame(table(sharing$sharing_level, sharing$set))
 counts$class <- unlist(lapply(as.numeric(as.character(counts$Var1)), function(x) {ifelse(x <= 3, "0-3",
-                                                               ifelse((x>3) & (x <= 10), "4-10", 
-                                                                      ifelse((x>10) & (x <= 30), "11-30",
-                                                                             ifelse((x>30) & (x <= 100), "31-100", 
-                                                                                    ifelse((x>100) & (x <= 300), "101-300", "301+")))))}))
+                                                                                         ifelse((x>3) & (x <= 10), "4-10", 
+                                                                                                ifelse((x>10) & (x <= 30), "11-30",
+                                                                                                       ifelse((x>30) & (x <= 100), "31-100", 
+                                                                                                              ifelse((x>100) & (x <= 300), "101-300", "301+")))))}))
 
 sum_ctrl <- sum(as.numeric(as.character(counts[counts$Var2 == "ctrl",]$Freq)))
 sum_exp <- sum(as.numeric(as.character(counts[counts$Var2 == "exp",]$Freq)))
@@ -81,22 +66,22 @@ p<-ggplot(counts_agg) +
         axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
         legend.text=element_text(size=12)) 
 
-# svg("output_figures/Fig3B.svg")
+svg("output_figures/Fig3B.svg")
 print(p)
-# dev.off()
+dev.off()
 
-sharing2<-sharing1[as.numeric(as.character(sharing1$sharing_level)) >= 2,]
+sharing2<-sharing[as.numeric(as.character(sharing$sharing_level)) >= 2,]
 
-pX_0<-(786-sharing1$sharing_level)/786 # this is equal to e^(-m)
+pX_0<-(786-sharing$sharing_level)/786 # this is equal to e^(-m)
 m<--log(pX_0) # m is equal to -ln(pX_0) - where m is count in a repertoire of 10^5
 f<-m*10 # average m in a repertoire of 10^6
 
-sharing1$f<-f
-sharing1[sharing1$sharing_level<2,]$f<-min(sharing1[sharing1$sharing_level >= 2,]$f)/10 # for those that we cannot estimate, put a value a factor of 10 lower
-sharing1$f_permln<-sharing1$f/10^6 # m per million
+sharing$f<-f
+sharing[sharing$sharing_level<2,]$f<-min(sharing[sharing$sharing_level >= 2,]$f)/10 # for those that we cannot estimate, put a value a factor of 10 lower
+sharing$f_permln<-sharing$f/10^6 # m per million
 
-exp<-sharing1[sharing1$set=="exp",]
-ctrl<-sharing1[sharing1$set=="ctrl",]
+exp<-sharing[sharing$set=="exp",]
+ctrl<-sharing[sharing$set=="ctrl",]
 
 counts_exp <- data.frame(table(exp$f_permln))
 counts_exp$log<-log10(as.numeric(as.character(counts_exp$Var1)))
@@ -120,18 +105,18 @@ p1<-ggplot(counts_exp_agg) +
         axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
         legend.text=element_text(size=12)) 
 
-# svg("output_figures/Fig3C.svg")
+svg("output_figures/Fig3C.svg")
 print(p1)
-# dev.off()
+dev.off()
 
 counts_ctrl <- data.frame(table(ctrl$f_permln))
 counts_ctrl$log<-log10(as.numeric(as.character(counts_ctrl$Var1)))
 counts_ctrl$logbin<-unlist(lapply(counts_ctrl$log, function(x){ifelse(x <= -8, "< 10^-8", 
-                                                                    ifelse(x <= -7, "10^-8 - 10^-7", 
-                                                                           ifelse(x <= -6, "10^-7 - 10^-6",
-                                                                                  ifelse(x <= -5, "10^-6 - 10^-5", "> 10^-5"))))}))
+                                                                      ifelse(x <= -7, "10^-8 - 10^-7", 
+                                                                             ifelse(x <= -6, "10^-7 - 10^-6",
+                                                                                    ifelse(x <= -5, "10^-6 - 10^-5", "> 10^-5"))))}))
 counts_ctrl$logbin<-factor(counts_ctrl$logbin, 
-                          levels = c("< 10^-8", "10^-8 - 10^-7", "10^-7 - 10^-6", "10^-6 - 10^-5", "> 10^-5"))
+                           levels = c("< 10^-8", "10^-8 - 10^-7", "10^-7 - 10^-6", "10^-6 - 10^-5", "> 10^-5"))
 counts_ctrl_agg<-aggregate(counts_ctrl$Freq, by=list(logbin = counts_ctrl$logbin), FUN=sum)
 
 library(scales)
@@ -148,6 +133,6 @@ p2<-ggplot(counts_ctrl_agg) +
         axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
         legend.text=element_text(size=12)) 
 
-# svg("output_figures/Fig3D.svg")
+svg("output_figures/Fig3D.svg")
 print(p2)
-# dev.off()
+dev.off()
