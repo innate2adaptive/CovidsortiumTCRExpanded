@@ -2,8 +2,6 @@ library(ggplot2)
 library(reshape)
 library(stringr)
 
-## Section A - total counts (Fig 5B)
-
 gp66naive<-read.csv("data/LCMVdata/NaiveGP66_UMI.csv")
 gp66eff<-read.csv("data/LCMVdata/E_GP66_UMI.csv")
 
@@ -27,6 +25,8 @@ np205eff_c<-colSums(np205eff[,2:11])
 
 np396naive_c<-colSums(np396naive[,2:11])
 np396eff_c<-colSums(np396eff[,2:11])
+
+## Section A - total counts (Fig 5B)
 
 counts_gp66<-data.frame(t(rbind(gp66naive_c,gp66eff_c)))
 colnames(counts_gp66)<-c("naive", "effector")
@@ -141,31 +141,33 @@ eff_sharing<-merge(effectors, cdr3counts[,c("aminoAcid", "sharing_level")],
       by.x = "X", by.y = "aminoAcid", all.x=TRUE)
 eff_sharing$sharing_level<-as.numeric(as.character(eff_sharing$sharing_level))
 
-eff_sharing[is.na(eff_sharing$sharing_level),]<-0
+eff_sharing[is.na(eff_sharing$sharing_level),]$sharing_level<-0
 
 pX_0<-(mice-eff_sharing$sharing_level)/mice # this is equal to e^(-m)
+pX_0[pX_0 == 0] <- 0.001
 m<--log(pX_0) # m is equal to -ln(pX_0) - where m is count in a repertoire of 10^5
 f<-m*10 # average m in a repertoire of 10^6
 
 eff_sharing$f<-f
-eff_sharing[eff_sharing$sharing_level<2,]$f<-min(eff_sharing[eff_sharing$sharing_level >= 2,]$f)/10 # for those that we cannot estimate, put a value a factor of 10 lower
+eff_sharing[eff_sharing$sharing_level==0,]$f<-min(eff_sharing[eff_sharing$sharing_level > 0,]$f)/10 # for those that we cannot estimate, put a value a factor of 10 lower
 eff_sharing$f_permln<-eff_sharing$f/10^6 # m per million
 
-counts_exp <- data.frame(table(eff_sharing$f_permln))
+counts_exp <- data.frame(table(eff_sharing$f_permln, eff_sharing$epitope))
 counts_exp$log<-log10(as.numeric(as.character(counts_exp$Var1)))
-counts_exp$logbin<-unlist(lapply(counts_exp$log, function(x){ifelse(x <= -8, "< 10^-8", 
-                                                                    ifelse(x <= -7, "10^-8 - 10^-7", 
-                                                                           ifelse(x <= -6, "10^-7 - 10^-6",
-                                                                                  ifelse(x <= -5, "10^-6 - 10^-5", "> 10^-5"))))}))
+counts_exp$logbin<-unlist(lapply(counts_exp$log, function(x){ifelse(x <= -6, "< 10^-6", 
+                                                                    ifelse(x <= -5, "10^-6 - 10^-5", 
+                                                                           ifelse(x <= -4, "10^-5 - 10^-4", ">10^-4"
+                                                                                  )))}))
 counts_exp$logbin<-factor(counts_exp$logbin, 
-                          levels = c("< 10^-8", "10^-8 - 10^-7", "10^-7 - 10^-6", "10^-6 - 10^-5", "> 10^-5"))
-counts_exp_agg<-aggregate(counts_exp$Freq, by=list(logbin = counts_exp$logbin), FUN=sum)
+                          levels = c("< 10^-6", "10^-6 - 10^-5", "10^-5 - 10^-4", "> 10^-4"))
+counts_exp_agg<-aggregate(counts_exp$Freq, by=list(logbin = counts_exp$logbin, epitope = counts_exp$Var2), FUN=sum)
 
 p1<-ggplot(counts_exp_agg) +
   geom_bar(aes(x = logbin, y = x), stat = "identity", fill = "deepskyblue2", color = "black") +
-  scale_x_discrete(labels = c(bquote('<'*10^-8),bquote(10^-8*' - '*10^-7), 
-                              bquote(10^-7*' - '*10^-6), bquote(10^-6*' - '*10^-5), bquote('>'*10^-5))) +
+  scale_x_discrete(labels = c(bquote('<'*10^-6),bquote(10^-6*' - '*10^-5), 
+                              bquote(10^-5*' - '*10^-4), bquote('>'*10^-4))) +
   labs(x = "", y = "proportion", fill = "") +
+  facet_wrap(vars(epitope), ncol=2) +
   theme_classic() + # keep the theme consistent for all our plots
   theme(axis.text=element_text(size=20),
         axis.title=element_text(size=20),
