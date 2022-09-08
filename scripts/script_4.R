@@ -176,8 +176,8 @@ b<-c(V_match_ctrl,length(V_match)-V_match_ctrl)
 m<-rbind(a,b)
 fisher.test(m)
 
-par(lwd=2,mar=c(5,5,2,5))
-barplot(c(V_match_l,V_match_ctrl), width = c(0.5,0.5), beside = TRUE, main = paste(" V gene"),density=c(20,0),names.arg = c("Expanded", "Control"),  col=c("blue","black"),lwd=2, ylab="Matched V genes",cex.lab=1.5, cex.names=1.5,xlim = c(0,2))
+# par(lwd=2,mar=c(5,5,2,5))
+# barplot(c(V_match_l,V_match_ctrl), width = c(0.5,0.5), beside = TRUE, main = paste(" V gene"),density=c(20,0),names.arg = c("Expanded", "Control"),  col=c("blue","black"),lwd=2, ylab="Matched V genes",cex.lab=1.5, cex.names=1.5,xlim = c(0,2))
 
 df<-data.frame(list(Expanded = V_match_l, Control = V_match_ctrl))
 df_m<-reshape2::melt(df)
@@ -185,7 +185,7 @@ df_m<-reshape2::melt(df)
 p<-ggplot(df_m) +
   geom_bar(aes(x = variable, y = value, fill = variable), 
            stat = "identity", col = "black") +
-  scale_fill_manual(values = c(Expanded = "deepskyblue3", Control = "white")) +
+  scale_fill_manual(values = c(Expanded = "deepskyblue2", Control = "aliceblue")) +
   labs(x = "", y = "Matched V gene") +
   theme_classic() +
   theme(axis.text=element_text(size=20),
@@ -252,8 +252,8 @@ b<-c(m_c,nm_c)
 c<-rbind(a,b)
 fisher.test(c)
 
-par(lwd=2,mar=c(5,5,2,5))
-barplot(c(m,m_c), width = c(0.5,0.5), beside = TRUE, main = paste(" HLA restriction"),density=c(20,0),names.arg = c("Expanded", "Control"),  col=c("blue","black"),lwd=2, ylab="Matched HLA",cex.lab=1.5, cex.names=1.5,xlim = c(0,2))
+# par(lwd=2,mar=c(5,5,2,5))
+# barplot(c(m,m_c), width = c(0.5,0.5), beside = TRUE, main = paste(" HLA restriction"),density=c(20,0),names.arg = c("Expanded", "Control"),  col=c("blue","black"),lwd=2, ylab="Matched HLA",cex.lab=1.5, cex.names=1.5,xlim = c(0,2))
 
 df<-data.frame(list(Expanded = m, Control = m_c))
 df_m<-reshape2::melt(df)
@@ -261,7 +261,7 @@ df_m<-reshape2::melt(df)
 p<-ggplot(df_m) +
   geom_bar(aes(x = variable, y = value, fill = variable), 
            stat = "identity", col = "black") +
-  scale_fill_manual(values = c(Expanded = "deepskyblue3", Control = "white")) +
+  scale_fill_manual(values = c(Expanded = "deepskyblue2", Control = "aliceblue")) +
   labs(x = "", y = "Matched HLA") +
   theme_classic() +
   theme(axis.text=element_text(size=20),
@@ -271,11 +271,12 @@ svg(paste0(folder_plots, "Fig2d_HLA_matching_annotated.svg"))
 print(p)
 dev.off()
 
+# 
+# CI<-signif(fisher.test(c)[[2]],2)
+# ODD<-signif(fisher.test(c)[[3]],2)
+# p<-signif(fisher.test(c)[[1]],3)
+# par(lwd=2)
+# barplot(t(c), width = c(0.5,0.5), beside = FALSE, main = paste(ODD,"\n",CI[1],CI[2],"\n",p),density=c(20,0),names.arg = c("Observed","Control"),  col=c("blue","black"),lwd=2, yaxt="n" ,ylab="Matched HLA gene usage",cex.lab=1.5, legend.text = c("Match", "No match"),args.legend = list(x = 0.3, y = -10),cex.names=1.5,xlim = c(0,2))
+# axis(2, at = c(0,50,100,150,200,250), labels=c(0,50,100,150,200,250),cex.axis=1.5,las=1)
+# # not in paper
 
-CI<-signif(fisher.test(c)[[2]],2)
-ODD<-signif(fisher.test(c)[[3]],2)
-p<-signif(fisher.test(c)[[1]],3)
-par(lwd=2)
-barplot(t(c), width = c(0.5,0.5), beside = FALSE, main = paste(ODD,"\n",CI[1],CI[2],"\n",p),density=c(20,0),names.arg = c("Observed","Control"),  col=c("blue","black"),lwd=2, yaxt="n" ,ylab="Matched HLA gene usage",cex.lab=1.5, legend.text = c("Match", "No match"),args.legend = list(x = 0.3, y = -10),cex.names=1.5,xlim = c(0,2))
-axis(2, at = c(0,50,100,150,200,250), labels=c(0,50,100,150,200,250),cex.axis=1.5,las=1)
-# not in paper
