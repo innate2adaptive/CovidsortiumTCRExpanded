@@ -76,13 +76,13 @@ script_4.R uses exp_AB_merge2.txt, which is the list of annotated TCRs. There is
 
 - [x] **S9** Plots from Yanchun Peng
 
-- [ ] **S10** ??? - *can I make these with script_4?*
+- [ ] **S10** script_S10.R - *this still needs finish working on*
 
 - [x] **S11** script_4.R Section B
 
 - [x] **S12** script_6.R - calculates clustering at various threshold and compares expanded vs non-expanded controls
 
-**controls_long.R** generates the controls - *to be adapted*
+**controls_long.R** generates the controls - *adapted, needs to be re-run and need to re-run bulk analysis as well as controls were made on the exp_AB_wide1*
 
 - [x] **S13** script_5.R - calculates and plots clustering
 
