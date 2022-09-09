@@ -8,7 +8,7 @@ sharing_ems<-readRDS("data/downloaded_data/Emerson_sharing_aa.rds")
 load("data/output_data/exp_AB_wide3.RData")
 
 exp_b<-exp_AB_wide3[exp_AB_wide3$chain == "beta",] # emerson set only has beta
-# exp_b<-exp_b[!duplicated(exp_b[,c("junction_aa")]),]
+exp_b<-exp_b[!duplicated(exp_b[,c("junction_aa")]),]
 
 rm(exp_AB_wide3)
 
@@ -29,7 +29,7 @@ close(myConnection)
 # the data is in long format, so first I keep only one entry for each tcr in each patient (here I have multiple entries for multiple timepoints)
 all_B_long1<-all_B_long[!(duplicated(all_B_long[, c("decombinator_id", "ID")])),]
 rm(all_B_long)
-# all_B_long1<-all_B_long1[!duplicated(all_B_long1[,c("junction_aa")]),]
+all_B_long1<-all_B_long1[!duplicated(all_B_long1[,c("junction_aa")]),]
 
 all_B_long1$ID<-as.character(all_B_long1$ID)
 sharing_exp$ID<-as.character(sharing_exp$ID)
@@ -81,22 +81,22 @@ p<-ggplot(counts_agg) +
         axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
         legend.text=element_text(size=12)) 
 
-# svg("output_figures/Fig3B.svg")
+svg("output_figures/Fig3B.svg")
 print(p)
-# dev.off()
+dev.off()
 
-sharing2<-sharing1[as.numeric(as.character(sharing1$sharing_level)) >= 2,]
+sharing2<-sharing[as.numeric(as.character(sharing$sharing_level)) >= 2,]
 
-pX_0<-(786-sharing1$sharing_level)/786 # this is equal to e^(-m)
+pX_0<-(786-sharing$sharing_level)/786 # this is equal to e^(-m)
 m<--log(pX_0) # m is equal to -ln(pX_0) - where m is count in a repertoire of 10^5
 f<-m*10 # average m in a repertoire of 10^6
 
-sharing1$f<-f
-sharing1[sharing1$sharing_level<2,]$f<-min(sharing1[sharing1$sharing_level >= 2,]$f)/10 # for those that we cannot estimate, put a value a factor of 10 lower
-sharing1$f_permln<-sharing1$f/10^6 # m per million
+sharing$f<-f
+sharing[sharing$sharing_level<2,]$f<-min(sharing[sharing$sharing_level >= 2,]$f)/10 # for those that we cannot estimate, put a value a factor of 10 lower
+sharing$f_permln<-sharing$f/10^6 # m per million
 
-exp<-sharing1[sharing1$set=="exp",]
-ctrl<-sharing1[sharing1$set=="ctrl",]
+exp<-sharing[sharing$set=="exp",]
+ctrl<-sharing[sharing$set=="ctrl",]
 
 counts_exp <- data.frame(table(exp$f_permln))
 counts_exp$log<-log10(as.numeric(as.character(counts_exp$Var1)))
@@ -120,9 +120,9 @@ p1<-ggplot(counts_exp_agg) +
         axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
         legend.text=element_text(size=12)) 
 
-# svg("output_figures/Fig3C.svg")
+svg("output_figures/Fig3C.svg")
 print(p1)
-# dev.off()
+dev.off()
 
 counts_ctrl <- data.frame(table(ctrl$f_permln))
 counts_ctrl$log<-log10(as.numeric(as.character(counts_ctrl$Var1)))
@@ -148,6 +148,6 @@ p2<-ggplot(counts_ctrl_agg) +
         axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
         legend.text=element_text(size=12)) 
 
-# svg("output_figures/Fig3D.svg")
+svg("output_figures/Fig3D.svg")
 print(p2)
-# dev.off()
+dev.off()
