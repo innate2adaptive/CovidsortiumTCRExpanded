@@ -144,9 +144,9 @@ eff_sharing$sharing_level<-as.numeric(as.character(eff_sharing$sharing_level))
 eff_sharing[is.na(eff_sharing$sharing_level),]$sharing_level<-0
 
 pX_0<-(mice-eff_sharing$sharing_level)/mice # this is equal to e^(-m)
-pX_0[pX_0 == 0] <- 0.001
+pX_0[pX_0 == 0] <- 0.01
 m<--log(pX_0) # m is equal to -ln(pX_0) - where m is count in a repertoire of 10^5
-f<-m*10 # average m in a repertoire of 10^6
+f<-m# average m in a repertoire of 10^6
 
 eff_sharing$f<-f
 eff_sharing[eff_sharing$sharing_level==0,]$f<-min(eff_sharing[eff_sharing$sharing_level > 0,]$f)/10 # for those that we cannot estimate, put a value a factor of 10 lower
@@ -176,3 +176,65 @@ p1<-ggplot(counts_exp_agg) +
         legend.text=element_text(size=12))
 
 print(p1)
+
+for (ep in c("GP66", "GP92", "NP205", "NP396")){
+  CDR3counts<-list()
+  
+  for (cdr3 in unique(naive$X)){
+    s<-naive[(naive$X == cdr3) & (naive$epitope == ep),]
+    print(s)
+    mice<-unique(s$mouse)
+    print(mice)
+    print(length(mice))
+    CDR3counts[[cdr3]]<-length(mice)
+  }
+  
+  cdr3counts<-data.frame(t(data.frame(CDR3counts)))
+  colnames(cdr3counts)<-c("sharing_level")
+  cdr3counts$aminoAcid<-rownames(cdr3counts)
+  
+  mice<-length(unique(naive$mouse))
+  
+  eff<-effectors[effectors$epitope == ep,]
+  eff_sharing<-merge(eff, cdr3counts[,c("aminoAcid", "sharing_level")], 
+            by.x = "X", by.y = "aminoAcid", all.x=TRUE)
+  
+  eff_sharing$sharing_level<-as.numeric(as.character(eff_sharing$sharing_level))
+  
+  eff_sharing[is.na(eff_sharing$sharing_level),]$sharing_level<-0
+  
+  pX_0<-(mice-eff_sharing$sharing_level)/mice # this is equal to e^(-m)
+  pX_0[pX_0 == 0] <- 0.01
+  m<--log(pX_0) # m is equal to -ln(pX_0) - where m is count in a repertoire of 10^5
+  f<-m*10 # average m in a repertoire of 10^6
+  
+  eff_sharing$f<-f
+  eff_sharing[eff_sharing$sharing_level==0,]$f<-min(eff_sharing[eff_sharing$sharing_level > 0,]$f)/10 # for those that we cannot estimate, put a value a factor of 10 lower
+  eff_sharing$f_permln<-eff_sharing$f/10^6 # m per million
+  
+  counts_exp <- data.frame(table(eff_sharing$f_permln, eff_sharing$epitope))
+  counts_exp$log<-log10(as.numeric(as.character(counts_exp$Var1)))
+  counts_exp$logbin<-unlist(lapply(counts_exp$log, function(x){ifelse(x <= -6, "< 10^-6", 
+                                                                      ifelse(x <= -5, "10^-6 - 10^-5", 
+                                                                             ifelse(x <= -4, "10^-5 - 10^-4", ">10^-4"
+                                                                             )))}))
+  counts_exp$logbin<-factor(counts_exp$logbin, 
+                            levels = c("< 10^-6", "10^-6 - 10^-5", "10^-5 - 10^-4", "> 10^-4"))
+  counts_exp_agg<-aggregate(counts_exp$Freq, by=list(logbin = counts_exp$logbin, epitope = counts_exp$Var2), FUN=sum)
+  
+  p1<-ggplot(counts_exp_agg) +
+    geom_bar(aes(x = logbin, y = x), stat = "identity", fill = "deepskyblue2", color = "black") +
+    scale_x_discrete(labels = c(bquote('<'*10^-6),bquote(10^-6*' - '*10^-5), 
+                                bquote(10^-5*' - '*10^-4), bquote('>'*10^-4))) +
+    labs(x = "", y = "proportion", fill = "") +
+    # facet_wrap(vars(epitope), ncol=2) +
+    theme_classic() + # keep the theme consistent for all our plots
+    theme(axis.text=element_text(size=20),
+          axis.title=element_text(size=20),
+          title=element_text(size=14),
+          axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
+          legend.text=element_text(size=12))
+  
+  print(p1)
+  
+}
