@@ -46,11 +46,9 @@ script_4.R uses exp_AB_merge2.txt, which is the list of annotated TCRs. There is
 
 - [x] **2E** script_4.R, Section A. Save heatmap and legend separately.
 
-- [x] **2F** script_5.R - calculates and plots clustering
+- [x] **2F** script_5.R - calculates and plots clustering. Note: this clustering keeps duplicates, so that you see multiple nodes when the same cdr3 is present in multiple patients.
 
-- [x] **Fig 3** - emerson2.R: Uses controls generated from control_long.R, with duplicates, as comparison (I think this is the way that Erez had originally done it)
-
-emerson1.R uses the whole non-expanded set to generate the same plot.
+- [x] **Fig 3** - emerson1.R: uses the whole (unique) non-expanded set and the whole (unique) expanded set to compare sharing levels and precursor frequencies.
 
 *Note: Emerson data does not fit on my DropBox nor on git, so I don't know where to save it*
 
@@ -82,7 +80,7 @@ emerson1.R uses the whole non-expanded set to generate the same plot.
 
 - [x] **S10** script_4.R Section B
 
-- [x] **S11** script_6.R - calculates clustering at various threshold and compares expanded vs non-expanded controls. *This currently uses the controls that are taken from unique CDR3s*
+- [x] **S11** script_6.R - calculates clustering at various threshold and compares expanded vs non-expanded controls. This uses controls that are taken from unique CDR3s (controls_long.R) and compares them to the list of unique cdr3s that expand.
 
 **controls_long.R** generates the controls from unique CDR3s. These are the controls used in the current figures - *adapted*
 
