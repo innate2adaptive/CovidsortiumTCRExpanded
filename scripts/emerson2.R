@@ -20,7 +20,7 @@ dim(sharing_exp[sharing_exp$sharing_level >= 2,]) # 2903 as in paper
 rm(exp_b)
 
 load("data/control_beta_1.RData")
-ctrl<-data.frame(control_b[[1]])
+ctrl<-data.frame(unlist(control_b))
 colnames(ctrl)<-c("junction_aa")
 # ctrl<-data.frame(ctrl[!duplicated(ctrl[,c("junction_aa")]),])
 # colnames(ctrl)<-c("junction_aa")
