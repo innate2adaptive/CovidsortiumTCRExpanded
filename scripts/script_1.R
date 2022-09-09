@@ -16,24 +16,24 @@ folder_data<-"data/output_data/"  # don't save to dropbox, so if people use this
 #alpha
 # data is now loaded on a Dropbox that anyone with the link can access
 # so we load the data from there
-myURL <- "https://www.dropbox.com/s/93jzrddo291h202/data_tsv_alpha.Rdata?raw=1"
-myConnection <- url(myURL)
-print(load(myConnection))
-close(myConnection)
-
-chain<-"alpha"
-data<-data_tsv_alpha
-rm(data_tsv_alpha)
-
-# Run this for beta
-# myURL<-"https://www.dropbox.com/s/7osyel4pit0gayn/data_tsv_beta.Rdata?raw=1"
+# myURL <- "https://www.dropbox.com/s/93jzrddo291h202/data_tsv_alpha.Rdata?raw=1"
 # myConnection <- url(myURL)
 # print(load(myConnection))
 # close(myConnection)
 # 
-# chain<-"beta"
-# data<-data_tsv_beta
-# rm(data_tsv_beta)
+# chain<-"alpha"
+# data<-data_tsv_alpha
+# rm(data_tsv_alpha)
+
+# Run this for beta
+myURL<-"https://www.dropbox.com/s/7osyel4pit0gayn/data_tsv_beta.Rdata?raw=1"
+myConnection <- url(myURL)
+print(load(myConnection))
+close(myConnection)
+
+chain<-"beta"
+data<-data_tsv_beta
+rm(data_tsv_beta)
 
 #analyse individual changes in TCRS
 #list of ids
@@ -77,10 +77,10 @@ p<-1
 #flag for whether to do plots for all
 #plot<-"TRUE"
 #plot<-"FALSE"
-for ( p in 1:length(HCW_all)){
-  v<-HCW_all[p]
+# for ( p in 1:length(HCW_all)){
+#   v<-HCW_all[p]
 
-# for (v in c("0017", "0123", "0373")){ # this is if you want to do only the plotting. Comment out two lines before 
+for (v in c("0017", "0123", "0373")){ # this is if you want to do only the plotting. Comment out two lines before 
   
   # change plot flags only for IDs of interest
   if (v == "0123"){
@@ -190,12 +190,14 @@ for ( i in 1 : (length(time)-1)){
   r<-1
   
   p<-ggplot() + 
-    scale_y_continuous(trans = "log2", limits = c(1,2^12)) +
-    scale_x_continuous(trans = "log2", limits = c(1,2^12)) +
+    scale_y_continuous(trans = "log2", limits = c(1,2^12),
+                       breaks = c(min(x_ss), 2^4, 2^6, 2^8, 2^10), labels = c(0, 16, 64, 256, 1024)) +
+    scale_x_continuous(trans = "log2", limits = c(1,2^12),
+                       breaks = c(min(y_ss), 2^4, 2^6, 2^8, 2^10), labels = c(0, 16, 64, 256, 1024)) +
     #plot a straight line, whose slope is the relative mean of the time points
     geom_abline(intercept = 0,slope = my/mx) +
     # plot the frequency of each TCR at each of the two time points with jitter
-    geom_jitter(aes(x = x_ss, y = y_ss), alpha = 0.3, width = 0.05, height = 0.05) + 
+    geom_jitter(aes(x = x_ss, y = y_ss), alpha = 0.3, width = 0.1, height = 0.1, size = 2.5) + 
     #add the error limits as calcualted above using Poisson distribution
     #can correct the error margins by setting r = my/mx. But seems to work better setting r=1
     geom_line(aes(x = c(min/4,(2^c(0:4,4))*1E6/sum_m),y=c(poiss_l*scalar,2^12)), col = "blue", lty = "dashed") + # poisson high limit
@@ -204,8 +206,8 @@ for ( i in 1 : (length(time)-1)){
     ggtitle(paste0("HCW: ", v, ", ", chain, ", timepoints: ", time[i], "-", time[j])) +
     theme_classic() + # keep the theme consistent for all our plots
     theme(axis.text=element_text(size=20),
-           axis.title=element_text(size=16),
-           title=element_text(size=14)) 
+           axis.title=element_text(size=20),
+           title=element_text(size=20)) 
   
   svg(paste0(folder_plots, title, v,"_",time[i],"_",time[j],"_",chain,".svg"))
   print(p)

@@ -48,7 +48,7 @@ script_4.R uses exp_AB_merge2.txt, which is the list of annotated TCRs. There is
 
 - [x] **2F** script_5.R - calculates and plots clustering
 
-- [x] **Fig 3** - *I couldn't figure out how to use the existing script, so made a new one to do the same thing. Uses controls from unique, with duplicates, as comparison (I think this is the way that Erez had originally done it)* - emerson2.R
+- [x] **Fig 3** - emerson2.R: Uses controls generated from control_long.R, with duplicates, as comparison (I think this is the way that Erez had originally done it)
 
 emerson1.R uses the whole non-expanded set to generate the same plot.
 
@@ -82,11 +82,9 @@ emerson1.R uses the whole non-expanded set to generate the same plot.
 
 - [x] **S10** script_4.R Section B
 
-- [x] **S11** script_6.R - calculates clustering at various threshold and compares expanded vs non-expanded controls
+- [x] **S11** script_6.R - calculates clustering at various threshold and compares expanded vs non-expanded controls. *This currently uses the controls that are taken from unique CDR3s*
 
-*This currently uses the controls that are taken from unique CDR3s*
-
-**controls_long.R** generates the controls from unique CDR3s. These are the controls used in the current figures - *adapted, needs to be re-run and need to re-run bulk analysis as well as controls were made on the exp_AB_wide1*
+**controls_long.R** generates the controls from unique CDR3s. These are the controls used in the current figures - *adapted*
 
 **contronls_long_1.R** generates the controls slightly differently, by taking unique dcb_id/HCW ID combinations, rather than unique cdr3s. 
 
