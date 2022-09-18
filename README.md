@@ -52,9 +52,9 @@ script_4.R uses exp_AB_merge2.txt, which is the list of annotated TCRs. There is
 
 *Note: Emerson data does not fit on my DropBox nor on git, so I don't know where to save it*
 
-- [x] **Fig 4** Scripts from Cedric to add.
+- [x] **Fig 4** Added newest version that CT provided 30/06/2022.
 
-- [ ] **Fig 5** LCMV_analysis.R
+- [x] **Fig 5** LCMV_analysis.R
 
 *We currently write out the numbers for controls in 5C, rather than show how they are derived*
 
