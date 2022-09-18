@@ -54,9 +54,9 @@ script_4.R uses exp_AB_merge2.txt, which is the list of annotated TCRs. There is
 
 - [x] **Fig 4** Scripts from Cedric to add.
 
-- [ ] **Fig 5** Scripts? Data? *Benny to send*
+- [ ] **Fig 5** LCMV_analysis.R
 
-*Found LCMV data on DropBox. 5B is plotted and looks correct, I still need to figure out 5C*
+*We currently write out the numbers for controls in 5C, rather than show how they are derived*
 
 #### Supplementary
 
@@ -93,5 +93,3 @@ script_4.R uses exp_AB_merge2.txt, which is the list of annotated TCRs. There is
 #### Important things to figure out
 
 - **HCW195** - is it week -1 and week -2?
-
-- Re-make controls to the way I make them for emerson and re-run clustering

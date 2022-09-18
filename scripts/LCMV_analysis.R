@@ -103,12 +103,13 @@ i<-1
 k<-1
 for (i in c(1,3,5,7)){
   data<-read.table(paste0(input_folder,dir[i+8]),sep=",",header = TRUE,row.names = 1)
-  data_E<-read.table(paste0(input_folder,dir[i]),sep=",",header = TRUE,row.names = 1)
+  # data_E<-read.table(paste0(input_folder,dir[i]),sep=",",header = TRUE,row.names = 1)
     
-  print(dim(data_E))
+  print(dim(data))
   
   name<-colnames(data)[1]
   epitope<-strsplit(name,split="\\.")[[1]][1]
+  print(epitope)
 
   min<-unique(sort(unlist(data),decreasing=FALSE))[2]
   #calculate proportion of each TCR which is zero
@@ -117,10 +118,11 @@ for (i in c(1,3,5,7)){
   pzero<-c()
   j<-1
   for ( j in 1:dim(data)[1]){
-    pzero[j]<-length(which(data[j,]<min))
+    pzero[j]<-length(which(data[j,]<min)) # counts in how many mice a CDR3 is not found
   }
   i_gt1<-which(pzero<10)
   zeros<-totals[k]-dim(data)[1]
+  # print(zeros)
   #average number of UMI in naive from Michal
   UMI_T<-50000
   mu<--log(pzero[i_gt1]/dim(data)[2])#derive m from proportion of mice which do not have sequence
@@ -129,16 +131,27 @@ for (i in c(1,3,5,7)){
   
   counts <- data.frame(table(f_permln))
   counts$f_permln<-as.numeric(as.character(counts$f_permln))
-  counts[dim(counts)[1] + 1,]<-c(min(f_permln)/10, zeros)
+  # counts[dim(counts)[1] + 1,]<-c(min(f_permln)/2, zeros)
   counts$log<-log10(counts$f_permln)
   
   counts$logbin<-unlist(lapply(counts$log, function(x){ifelse(x <= -6, "< 10^-6", 
                                                               ifelse(x <= -5, "10^-6 - 10^-5", 
-                                                                     ifelse(x <= -4, "10^-5 - 10^-4",
-                                                                            ifelse(x <= -3, "10^-4 - 10^-3", "> 10^-3"))))}))
-  counts$logbin<-factor(counts$logbin, 
-                            levels = c("< 10^-6", "10^-6 - 10^-5", "10^-5 - 10^-4", "10^-4 - 10^-3", "> 10^-3"))
+                                                                     ifelse(x <= -4, "10^-5 - 10^-4", 
+                                                                           ifelse(x <= -3, "10^-4 - 10^-3", "> 10^-3"))))}))
   counts_agg<-aggregate(counts$Freq, by=list(logbin = counts$logbin), FUN=sum)
+  if ("< 10^-6" %in% counts_agg$logbin){
+    all_small<-as.numeric(counts_agg[counts_agg$logbin == "< 10^-6",]$x) + zeros
+  }else{
+    all_small<-zeros
+  }
+  
+  print(all_small)
+  counts_agg<-counts_agg[counts_agg$logbin != "< 10^-6",]
+  counts_agg<-rbind(counts_agg, c("< 10^-6", all_small))
+  counts_agg$logbin<-factor(counts_agg$logbin, 
+                        levels = c("< 10^-6", "10^-6 - 10^-5", "10^-5 - 10^-4", "10^-4 - 10^-3", "> 10^-3"))
+  
+  print(counts_agg)
   
   counts_agg$epitope<-epitope
   counts_agg$type<-"inferred"
@@ -157,23 +170,24 @@ for (i in c(1,3,5,7)){
   
   counts <- data.frame(table(p))
   counts$p<-as.numeric(as.character(counts$p))
-  counts[dim(counts)[1] + 1,]<-c(min(p)/10, zeros)
+  # counts[dim(counts)[1] + 1,]<-c(min(p)/10, zeros)
   counts$log<-log10(counts$p)
   
   counts$logbin<-unlist(lapply(counts$log, function(x){ifelse(x <= -6, "< 10^-6", 
                                                               ifelse(x <= -5, "10^-6 - 10^-5", 
                                                                      ifelse(x <= -4, "10^-5 - 10^-4",
                                                                             ifelse(x <= -3, "10^-4 - 10^-3", "> 10^-3"))))}))
-  counts$logbin<-factor(counts$logbin, 
-                        levels = c("< 10^-6", "10^-6 - 10^-5", "10^-5 - 10^-4", "10^-4 - 10^-3", "> 10^-3"))
   counts_agg<-aggregate(counts$Freq, by=list(logbin = counts$logbin), FUN=sum)
+  counts_agg[counts_agg$logbin == "< 10^-6",]$x <- counts_agg[counts_agg$logbin == "< 10^-6",]$x + zeros
+  counts_agg$logbin<-factor(counts_agg$logbin, 
+                        levels = c("< 10^-6", "10^-6 - 10^-5", "10^-5 - 10^-4", "10^-4 - 10^-3", "> 10^-3"))
   
   counts_agg$epitope<-epitope
   counts_agg$type<-"direct"
   
   counts_all<-rbind(counts_all, counts_agg)
   
-  rm(counts_agg)
+  # rm(counts_agg)
   
   #############################################################
   # #plot controls
@@ -187,20 +201,32 @@ for (i in c(1,3,5,7)){
 }
 
 counts_all$type<-factor(counts_all$type, levels = c("inferred", "direct"))
+counts_all_wc<-rbind(counts_all, c("< 10^-6", 1777, "control", "inferred"))
+counts_all_wc<-rbind(counts_all_wc, c("10^-6 - 10^-5", 12, "control", "inferred"))
+counts_all_wc<-rbind(counts_all_wc, c("10^-5 - 10^-4", 3, "control", "inferred"))
 
-p1<-ggplot(counts_all) +
-  geom_bar(aes(x = logbin, y = x, fill = type), stat = "identity", alpha = 0.7, color = "black") +
+counts_all_wc<-rbind(counts_all_wc, c("< 10^-6", 1777, "control", "direct"))
+counts_all_wc<-rbind(counts_all_wc, c("10^-6 - 10^-5", 12, "control", "direct"))
+counts_all_wc<-rbind(counts_all_wc, c("10^-5 - 10^-4", 3, "control", "direct"))
+
+counts_all_wc$epitope<-factor(counts_all_wc$epitope, levels = c("GP66", "GP92", "NP205", "NP396", "control"))
+
+p1<-ggplot(counts_all_wc) +
+  geom_bar(aes(x = logbin, y = as.numeric(x), fill = type), stat = "identity", alpha = 0.7, color = "black") +
   scale_fill_manual(values = c(inferred = "burlywood", direct = "azure2")) +
   # scale_color_manual(values = c(inferred = "black", direct = "white")) +
   scale_x_discrete(labels = c(bquote('<'*10^-6),bquote(10^-6*' - '*10^-5), 
                               bquote(10^-5*' - '*10^-4), bquote(10^-4*' - '*10^-3), bquote('>'*10^-3))) +
-  labs(x = "", y = "number of CDR3s", fill = "") +
-  facet_grid(rows = vars(epitope), cols = vars(type)) +
+  labs(x = "TCR frequency", y = "number of CDR3s", fill = "") +
+  facet_grid(rows = vars(epitope), cols = vars(type), scales="free") +
   theme_classic() + # keep the theme consistent for all our plots
   theme(axis.text=element_text(size=10),
         axis.title=element_text(size=10),
         title=element_text(size=14),
         axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
-        legend.text=element_text(size=12)) 
+        legend.text=element_text(size=12)) + theme(aspect.ratio = 1.3)
+  # ylim(0, 600)
 
+svg("output_figures/Fig5c_sharing_estimate_TCR_LCMV.svg")
 print(p1)
+dev.off()
