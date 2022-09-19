@@ -20,8 +20,8 @@ Sample ID	Baseline	FUP1	FUP2	FUP3	FUP4	FUP5	FUP13	FUP14	FUP15	6 M	Week first +	T
 170		+++								NS68	1				
 175	+++										0				
 180	+++	Withdrawn									0				
-184		+++	+++								2				
-195		+++								NS68	2				
+184		+++	+++								1				
+195		+++								NS68	1				
 196	+++					FU6					0				
 199	+++	Only one sample collected									0				
 229	+++		+++							NS68	0				
