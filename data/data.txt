@@ -20,8 +20,8 @@ Sample_ID	Baseline	FUP1	FUP2	FUP3	FUP4	FUP14	Symptoms	max_symptom	Ethnicity	Sex	
 170	1	1	NA	NA	1	1	10	2	White	Female	40	170	1
 175	1	NA	1	1	1	1	1	1	White	Female	57	175	0
 180	1	NA	NA	NA	NA	NA	2	2	Black	Female	25	180	0
-184	1	1	1	1	1	1	0	0	White	Female	62	184	2
-195	1	1	1	NA	1	1	8	2	White	Female	28	195	2
+184	1	1	1	1	1	1	0	0	White	Female	62	184	1
+195	1	1	1	NA	1	1	8	2	White	Female	28	195	1
 196	1	NA	NA	1	1	NA	4	2	NA	Male	26	196	0
 199	1	NA	NA	NA		NA	10	3	Asian	Male	62	199	0
 229	1	NA	1	1	1	1	6	2	Black	Female	27	229	0
