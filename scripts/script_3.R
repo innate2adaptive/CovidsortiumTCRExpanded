@@ -108,6 +108,7 @@ p1<-ggplot(results[(results$ID == "0101"),]) +
   scale_x_discrete(breaks = c("proportion_.3", "proportion_.2", "proportion_.1", 
                               "proportion_0", "proportion_1", "proportion_2", "proportion_3", "proportion_4", "proportion_14"),
                    labels = c("-3", "-2", "-1", "0", "1", "2", "3", "4", "12-14")) +
+  scale_y_continuous(limits = c(0,600)) +
   geom_point(aes(x = variable, y = value, col = chain)) +
   geom_line(aes(x = variable, y = value, group = tcrname, col = chain), 
             data = results[(results$ID == "0101") & (!is.na(results$value)),]) +
@@ -127,7 +128,7 @@ dev.off()
 p1a<-ggplot(results[(results$ID == "0101") & (results$variable %in% c("proportion_.2", "proportion_14")), ]) +
   scale_x_discrete(breaks = c("proportion_.3", "proportion_14"),
                    labels = c("Baseline", "Week 12-14")) +
-  # scale_y_continuous(limits = c(0,6000)) +
+  # scale_y_continuous(limits = c(0,500)) +
   # geom_point(aes(x = variable, y = value, col = chain)) +
   geom_line(aes(x = variable, y = value, group = tcrname, col = chain), 
             data = results[(results$ID == "0101") & (!is.na(results$value)) & (results$variable %in% c("proportion_.3", "proportion_14")),]) +
@@ -142,8 +143,8 @@ svg(paste0(folder_plots, "FigS7_dynamics_HCW101_week-2_14.svg"))
 print(p1a)
 dev.off()
 
-X<-results[(results$ID == "0101") & (results$variable %in% c("proportion_.2", "proportion_14")),]$value
-X[is.na(X)]<-0
+X<-results[(results$ID == "0101") & (results$variable %in% c("proportion_.3", "proportion_14")),]$value
+# X[is.na(X)]<-0
 kruskal.test(X,
              results[(results$ID == "0101") & (results$variable %in% c("proportion_.2", "proportion_14")), ]$variable)
 
@@ -153,7 +154,7 @@ p2<-ggplot(results[(results$ID == "0017"),]) +
   scale_x_discrete(breaks = c("proportion_.3", "proportion_.2", "proportion_.1", 
                               "proportion_0", "proportion_1", "proportion_2", "proportion_3", "proportion_4", "proportion_14"),
                    labels = c("-3", "-2", "-1", "0", "1", "2", "3", "4", "12-14")) +
-  scale_y_continuous(limits = c(0,6000)) +
+  scale_y_continuous(limits = c(0,600)) +
   geom_point(aes(x = variable, y = value, col = chain)) +
   geom_line(aes(x = variable, y = value, group = tcrname, col = chain), 
             data = results[(results$ID == "0017") & (!is.na(results$value)),]) +

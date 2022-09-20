@@ -29,8 +29,9 @@ for (metric in c("richness_dcb", "shannon_dcb")){
     geom_point() + 
     scale_colour_manual(values = mycols) + 
     geom_boxplot(fill = NA)+
+    scale_x_discrete(labels = c("-3", "-2", "-1", "0", "1", "2", "3", "4", "12-14")) +
     facet_rep_grid(rows = vars(control), labeller = as_labeller(control_names)) +
-    theme_classic() + labs(y = strsplit(metric, "_")[[1]][1])
+    theme_classic() + labs(y = strsplit(metric, "_")[[1]][1])  + theme(aspect.ratio = 0.8)
   svg(file=paste('output_figures/FigS4_all_alpha_subsample_', metric, ".svg", sep = ""), width=5,height=5)
   print(p1)
   dev.off()
@@ -51,8 +52,9 @@ for (metric in c("richness_dcb", "shannon_dcb")){
     geom_point() + 
     scale_colour_manual(values = mycols) + 
     geom_boxplot(fill = NA)+
+    scale_x_discrete(labels = c("-3", "-2", "-1", "0", "1", "2", "3", "4", "12-14")) +
     facet_rep_grid(rows = vars(control), labeller = as_labeller(control_names)) +
-    theme_classic() + labs(y = strsplit(metric, "_")[[1]][1])
+    theme_classic() + labs(y = strsplit(metric, "_")[[1]][1])  + theme(aspect.ratio = 0.8)
   svg(file=paste('output_figures/FigS4_all_beta_subsample_', metric, ".svg", sep = ""), width=5,height=5)
   print(p1)
   dev.off()
