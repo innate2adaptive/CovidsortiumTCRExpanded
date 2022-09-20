@@ -28,10 +28,11 @@ for ( i in 1:length(IDs)){
 #ID<-"0017"
 #ID<-"0042"
 #ID<-"0084"
-#ID<-"0195"
+#ID<-"0101"
 #ID<-"0036"
 #ID<-"0123"
 ID<-IDs[i]
+print(ID)
 i_ID<-which(exp_AB$ID==ID)
 
 counts<-counts_all[i_ID,]
@@ -68,7 +69,7 @@ p<-ggplot(results[(results$control == FALSE) & (!is.na(results$value)),]) +
   scale_color_manual(values = c(alpha = "brown2", beta="navyblue")) +
   scale_x_discrete(breaks = c("proportion_.3", "proportion_.2", "proportion_.1", 
                               "proportion_0", "proportion_1", "proportion_2", "proportion_3", "proportion_4", "proportion_14"),
-                   labels = c("-3", "-2", "-1", "0", "1", "2", "3", "4", "14")) +
+                   labels = c("-3", "-2", "-1", "0", "1", "2", "3", "4", "12-14")) +
   scale_y_continuous(limits = c(0,6000)) +
   labs(x = "weeks", y = "TCR/million") +
   facet_wrap(vars(ID), ncol = 7) +
@@ -84,7 +85,7 @@ p_c<-ggplot(results[(results$control == TRUE) & (!is.na(results$value)),]) +
   scale_color_manual(values = c(alpha = "brown2", beta="navyblue")) +
   scale_x_discrete(breaks = c("proportion_.3", "proportion_.2", "proportion_.1", 
                               "proportion_0", "proportion_1", "proportion_2", "proportion_3", "proportion_4", "proportion_14"),
-                   labels = c("-3", "-2", "-1", "0", "1", "2", "3", "4", "14")) +
+                   labels = c("-3", "-2", "-1", "0", "1", "2", "3", "4", "12-14")) +
   scale_y_continuous(limits = c(0,6000)) +
   labs(x = "weeks", y = "TCR/million") +
   facet_wrap(vars(ID)) +
@@ -103,14 +104,13 @@ dev.off()
 
 # Fig 1E
 
-p1<-ggplot(results[(results$ID == 195),]) +
+p1<-ggplot(results[(results$ID == "0101"),]) +
   scale_x_discrete(breaks = c("proportion_.3", "proportion_.2", "proportion_.1", 
                               "proportion_0", "proportion_1", "proportion_2", "proportion_3", "proportion_4", "proportion_14"),
-                   labels = c("-3", "-2", "-1", "0", "1", "2", "3", "4", "14")) +
-  scale_y_continuous(limits = c(0,6000)) +
+                   labels = c("-3", "-2", "-1", "0", "1", "2", "3", "4", "12-14")) +
   geom_point(aes(x = variable, y = value, col = chain)) +
   geom_line(aes(x = variable, y = value, group = tcrname, col = chain), 
-            data = results[(results$ID == 195) & (!is.na(results$value)),]) +
+            data = results[(results$ID == "0101") & (!is.na(results$value)),]) +
   scale_color_manual(values = c(alpha = "brown2", beta="navyblue")) +
   labs(x = "weeks", y = "TCR/million") +
   theme_classic() +
@@ -118,43 +118,45 @@ p1<-ggplot(results[(results$ID == 195),]) +
         axis.title=element_text(size=16),
         title=element_text(size=14))
 
-svg(paste0(folder_plots, "Fig1E_dynamics_HCW195.svg"))
+svg(paste0(folder_plots, "Fig1E_dynamics_HCW101.svg"))
 print(p1)
 dev.off()
 
 # Fig S7
 
-p1a<-ggplot(results[(results$ID == 195) & (results$variable %in% c("proportion_.2", "proportion_14")), ]) +
-  scale_x_discrete(breaks = c("proportion_.2", "proportion_14"),
-                   labels = c("Baseline", "Week 14")) +
+p1a<-ggplot(results[(results$ID == "0101") & (results$variable %in% c("proportion_.2", "proportion_14")), ]) +
+  scale_x_discrete(breaks = c("proportion_.3", "proportion_14"),
+                   labels = c("Baseline", "Week 12-14")) +
   # scale_y_continuous(limits = c(0,6000)) +
   # geom_point(aes(x = variable, y = value, col = chain)) +
   geom_line(aes(x = variable, y = value, group = tcrname, col = chain), 
-            data = results[(results$ID == 195) & (!is.na(results$value)) & (results$variable %in% c("proportion_.2", "proportion_14")),]) +
+            data = results[(results$ID == "0101") & (!is.na(results$value)) & (results$variable %in% c("proportion_.3", "proportion_14")),]) +
   scale_color_manual(values = c(alpha = "brown2", beta="navyblue")) +
   labs(x = "weeks", y = "TCR/million") +
-  theme_classic() +
+  theme_classic() + 
   theme(axis.text=element_text(size=20),
         axis.title=element_text(size=16),
         title=element_text(size=14))
 
-svg(paste0(folder_plots, "FigS7_dynamics_HCW195_week-2_14.svg"))
+svg(paste0(folder_plots, "FigS7_dynamics_HCW101_week-2_14.svg"))
 print(p1a)
 dev.off()
 
-kruskal.test(results[(results$ID == 195) & (results$variable %in% c("proportion_.2", "proportion_14")),]$value,
-             results[(results$ID == 195) & (results$variable %in% c("proportion_.2", "proportion_14")), ]$variable)
+X<-results[(results$ID == "0101") & (results$variable %in% c("proportion_.2", "proportion_14")),]$value
+X[is.na(X)]<-0
+kruskal.test(X,
+             results[(results$ID == "0101") & (results$variable %in% c("proportion_.2", "proportion_14")), ]$variable)
 
 # Fig 1F
 
-p2<-ggplot(results[(results$ID == 17),]) +
+p2<-ggplot(results[(results$ID == "0017"),]) +
   scale_x_discrete(breaks = c("proportion_.3", "proportion_.2", "proportion_.1", 
                               "proportion_0", "proportion_1", "proportion_2", "proportion_3", "proportion_4", "proportion_14"),
-                   labels = c("-3", "-2", "-1", "0", "1", "2", "3", "4", "14")) +
+                   labels = c("-3", "-2", "-1", "0", "1", "2", "3", "4", "12-14")) +
   scale_y_continuous(limits = c(0,6000)) +
   geom_point(aes(x = variable, y = value, col = chain)) +
   geom_line(aes(x = variable, y = value, group = tcrname, col = chain), 
-            data = results[(results$ID == 17) & (!is.na(results$value)),]) +
+            data = results[(results$ID == "0017") & (!is.na(results$value)),]) +
   scale_color_manual(values = c(alpha = "brown2", beta="navyblue")) +
   labs(x = "weeks", y = "TCR/million") +
   theme_classic() +

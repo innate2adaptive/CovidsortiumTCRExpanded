@@ -1,5 +1,5 @@
 Sample_ID	Baseline	FUP1	FUP2	FUP3	FUP4	FUP14	Ethnicity	Sex	Age	Travel	Patient_exposure	Colleague_exposure	Household_exposure	Role	Location	PPE	Aerosolisation
-17	1	1	1	1	1	1	White	Male	49	Yes	No	Yes	No	Doctor	Other (cardiac MRI)	No	No
+17	1	1	1	1	1		White	Male	49	Yes	No	Yes	No	Doctor	Other (cardiac MRI)	No	No
 42	1	1	1	1	1		White	Female	31	Yes	No	No	No	Allied Health Professional	Lab	Yes	No
 83	1	1	1	1	1		Asian	Male	50	Yes	No	No	No	Doctor	ICU	Yes	Yes
 107	1	1	1	1	1		Asian	Female	57	No	No	No	No	Healthcare Assistant	ICU	Yes	Yes

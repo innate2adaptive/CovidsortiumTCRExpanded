@@ -1,26 +1,21 @@
-library(tabula)
-library(tidyr)
-library(dplyr)
-library(testit)
-library(vegan)
-library(DescTools)
+# library(tabula)
 
-load("data/output_data/exp_AB_wide3.R")
+load("data/output_data/exp_AB_wide3.RData")
 
 idcols <-c("decombinator_id", "v_call", "junction_aa", "j_call", "chain",
            "ID", "control")
-variablecol1<-c("total_.3", "total_.2", "total_.1", "total_0", "total_1", "total_2", "total_3",
+variablecol1<-c("total_-3", "total_-2", "total_-1", "total_0", "total_1", "total_2", "total_3",
                "total_4", "total_14")
-variablecol2<-c("proportion_.3", "proportion_.2", "proportion_.1", "proportion_0", "proportion_1", 
+variablecol2<-c("proportion_-3", "proportion_-2", "proportion_-1", "proportion_0", "proportion_1", 
                 "proportion_2",  "proportion_3", "proportion_4", "proportion_14")
 
 exp_AB_long1<-reshape(exp_AB_wide3[c(idcols, variablecol1)], direction = "long", 
         varying = variablecol1, timevar = "week_PCR", 
-        times = c(".3", ".2", ".1", "0", "1", "2", "3", "4", "14"),
+        times = c("-3", "-2", "-1", "0", "1", "2", "3", "4", "14"),
         v.names = "total", sep = "_")
 exp_AB_long2<-reshape(exp_AB_wide3[c(idcols, variablecol2)], direction = "long", 
                       varying = variablecol2, timevar = "week_PCR", 
-                      times = c(".3", ".2", ".1", "0", "1", "2", "3", "4", "14"),
+                      times = c("-3", "-2", "-1", "0", "1", "2", "3", "4", "14"),
                       v.names = "proportion", sep = "_")
 
 exp_AB_long<-merge(exp_AB_long1, exp_AB_long2, by=c(idcols, "week_PCR"))
@@ -32,6 +27,11 @@ exp_AB_long0$mycounts<-as.numeric(exp_AB_long0$total) * (as.numeric(exp_AB_long0
 exp_AB_long0$counts<-as.integer(round(exp_AB_long0$mycounts, 0))
 
 ## note that "total" is not total number of expanded, but rather total number in sample
+library(tidyr)
+library(dplyr)
+library(testit)
+library(vegan)
+library(DescTools)
 
 exp_AB_long0$total_exp<-0
 

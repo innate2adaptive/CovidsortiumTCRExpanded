@@ -10,7 +10,7 @@ PCR_pos2<-read.table(file="data/PCR_positive.csv",header=TRUE,stringsAsFactors =
 #remove 241 which does not exist in TCR data
 PCR_pos1<-PCR_pos2[-27,]
 PCR_pos<-PCR_pos1$Week.first..
-names(PCR_pos)<-PCR_pos1[,1]
+names(PCR_pos)<-as.character(PCR_pos1[,1])
 rm(PCR_pos2)
 #PCR_pos
 
@@ -78,7 +78,7 @@ data_exp_all<-c()
   #combine weeks and totals into one field so can pivot
   data_id$week_total<-paste(data_id$tp_week,data_id$total,sep="_")
   #add a column with week which became PCR +
-  data_id$PCR<-PCR_pos[ID]
+  data_id$PCR<-PCR_pos[as.character(as.numeric(as.character(ID)))]
   #data_id$PCR[1]
   #if(length(i_ID)>0){data_id$PCR<-PCR_pos1[i_ID,2]} else {data_id$PCR<-NA}
   #available times and totals for this ID
@@ -107,13 +107,16 @@ data_exp_all<-c()
   TCR_million<-(10^6)*data_long$duplicate_count/data_long$total
   data_long$proportion<-TCR_million
   #renumber weeks so relative to covid PCR +
-  if(data_long$control[1]=="FALSE"){week_PCR<-as.numeric(data_long$tp_week)-as.numeric(data_long$PCR)}
-  if(data_long$control[1]=="TRUE"){week_PCR<-as.numeric(data_long$tp_week)}
+  if(data_long$control[1]=="FALSE"){week_PCR<-as.numeric(as.character(data_long$tp_week))-as.numeric(as.character(data_long$PCR))}
+  if(data_long$control[1]=="TRUE"){week_PCR<-as.numeric(as.character(data_long$tp_week))}
 
   #rename the weeks so everything >= 12 is 14 and add this as an extra week
   week_PCR1<-week_PCR
   week_PCR1[week_PCR>11]<-14
   data_long$week_PCR<-week_PCR1
+  
+  print(ID)
+  print(data_long[1:10,])
 
   #remove tp_week and duplicate_count columns because they duplicate the PCR_week and proportion columns
   data_long<-subset(data_long,select=-c(tp_week,duplicate_count))

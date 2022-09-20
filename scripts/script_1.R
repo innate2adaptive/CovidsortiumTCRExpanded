@@ -12,28 +12,31 @@ folder_plots<-"output_figures/" # don't save to dropbox, so if people use this w
 #folder for data output
 folder_data<-"data/output_data/"  # don't save to dropbox, so if people use this will save locally
 
+
+options(timeout = max(1000, getOption("timeout"))) # increasing timeout might be necessary to load the files
+
 #I run the script separately for alpha and beta chains; I have commented out beta chain at the moment
 #alpha
 # data is now loaded on a Dropbox that anyone with the link can access
 # so we load the data from there
-# myURL <- "https://www.dropbox.com/s/93jzrddo291h202/data_tsv_alpha.Rdata?raw=1"
-# myConnection <- url(myURL)
-# print(load(myConnection))
-# close(myConnection)
-# 
-# chain<-"alpha"
-# data<-data_tsv_alpha
-# rm(data_tsv_alpha)
-
-# Run this for beta
-myURL<-"https://www.dropbox.com/s/7osyel4pit0gayn/data_tsv_beta.Rdata?raw=1"
+myURL <- "https://www.dropbox.com/s/93jzrddo291h202/data_tsv_alpha.Rdata?raw=1"
 myConnection <- url(myURL)
 print(load(myConnection))
 close(myConnection)
 
-chain<-"beta"
-data<-data_tsv_beta
-rm(data_tsv_beta)
+chain<-"alpha"
+data<-data_tsv_alpha
+rm(data_tsv_alpha)
+
+# Run this for beta
+# myURL<-"https://www.dropbox.com/s/7osyel4pit0gayn/data_tsv_beta.Rdata?raw=1"
+# myConnection <- url(myURL)
+# print(load(myConnection))
+# close(myConnection)
+# 
+# chain<-"beta"
+# data<-data_tsv_beta
+# rm(data_tsv_beta)
 
 #analyse individual changes in TCRS
 #list of ids
@@ -62,9 +65,7 @@ TCR_change_HCW<-list()
 p<-2
 
 #Note that PCR negative controls are 17, 42, 84,107,158,186
-v<-17
-v<-35
-v<-107
+
 ############################################################
 #if you want to run controls only
 #for (v in c(17,42,84,107,158,186)){
@@ -77,10 +78,10 @@ p<-1
 #flag for whether to do plots for all
 #plot<-"TRUE"
 #plot<-"FALSE"
-# for ( p in 1:length(HCW_all)){
-#   v<-HCW_all[p]
+for ( p in 1:length(HCW_all)){
+  v<-HCW_all[p]
 
-for (v in c("0017", "0123", "0373")){ # this is if you want to do only the plotting. Comment out two lines before 
+# for (v in c("0017", "0123", "0373")){ # this is if you want to do only the plotting. Comment out two lines before 
   
   # change plot flags only for IDs of interest
   if (v == "0123"){
@@ -179,7 +180,7 @@ for ( i in 1 : (length(time)-1)){
 
 #####################################################################################################
   #for plotting purposes only, not calculation or saving, subsample to 50,000 dots per plot
-  if(plot==TRUE){
+  if (v %in% c("0017", "0123", "0373")){
   if (length(x)>50000){i_sample<-sample(1:length(x),50000)} else {i_sample<-1:length(x)}
   x_ss<-norm_1[i_sample] # using non-log2 so that I can transofrm the axis
   y_ss<-norm_2[i_sample]
