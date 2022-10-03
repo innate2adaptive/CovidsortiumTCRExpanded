@@ -2,93 +2,14 @@ library(ggplot2)
 library(reshape)
 library(stringr)
 
-gp66naive<-read.csv("data/LCMVdata/NaiveGP66_UMI.csv")
-gp66eff<-read.csv("data/LCMVdata/E_GP66_UMI.csv")
+gp66eff<-read.csv("data/LCMVdata/E_GP66_UMI.csv",header = TRUE,row.names = 1)
+gp92eff<-read.csv("data/LCMVdata/E_GP92_UMI.csv",header = TRUE,row.names = 1)
+np205eff<-read.csv("data/LCMVdata/E_NP205_UMI.csv",header = TRUE,row.names = 1)
+np396eff<-read.csv("data/LCMVdata/E_NP396_UMI.csv",header = TRUE,row.names = 1)
 
-gp92naive<-read.csv("data/LCMVdata/NaiveGP92_UMI.csv")
-gp92eff<-read.csv("data/LCMVdata/E_GP92_UMI.csv")
+# I want to remove all the ones which have UMI count 0 at day 8 for all mice.
 
-np205naive<-read.csv("data/LCMVdata/NaiveNP205_UMI.csv")
-np205eff<-read.csv("data/LCMVdata/E_NP205_UMI.csv")
-
-np396naive<-read.csv("data/LCMVdata/NaiveNP396_UMI.csv")
-np396eff<-read.csv("data/LCMVdata/E_NP396_UMI.csv")
-
-gp66naive_c<-colSums(gp66naive[,2:11])
-gp66eff_c<-colSums(gp66eff[,2:11])
-
-gp92naive_c<-colSums(gp92naive[,2:11])
-gp92eff_c<-colSums(gp92eff[,2:11])
-
-np205naive_c<-colSums(np205naive[,2:11])
-np205eff_c<-colSums(np205eff[,2:11])
-
-np396naive_c<-colSums(np396naive[,2:11])
-np396eff_c<-colSums(np396eff[,2:11])
-
-## Section A - total counts (Fig 5B)
-
-counts_gp66<-data.frame(t(rbind(gp66naive_c,gp66eff_c)))
-colnames(counts_gp66)<-c("naive", "effector")
-counts_gp66$id<-rownames(counts_gp66)
-counts_gp66[c("epitope","LCMV", "mouse")]<-str_split_fixed(counts_gp66$id, "[.]", 3)
-
-g<-counts_gp66[(counts_gp66$LCMV == "LCMV8"),]
-print(wilcox.test(g$effector,counts_gp66$naive))
-
-counts_gp66_m<-melt(counts_gp66)
-
-counts_gp92<-data.frame(t(rbind(gp92naive_c,gp92eff_c)))
-colnames(counts_gp92)<-c("naive", "effector")
-counts_gp92$id<-rownames(counts_gp92)
-counts_gp92[c("epitope","LCMV", "mouse")]<-str_split_fixed(counts_gp92$id, "[.]", 3)
-
-g<-counts_gp92[(counts_gp92$LCMV == "LCMV8"),]
-print(wilcox.test(g$effector,counts_gp92$naive))
-
-counts_gp92_m<-melt(counts_gp92)
-
-counts_np205<-data.frame(t(rbind(np205naive_c,np205eff_c)))
-colnames(counts_np205)<-c("naive", "effector")
-counts_np205$id<-rownames(counts_np205)
-counts_np205[c("epitope","LCMV", "mouse")]<-str_split_fixed(counts_np205$id, "[.]", 3)
-
-g<-counts_np205[(counts_np205$LCMV == "LCMV8"),]
-print(wilcox.test(g$effector,counts_np205$naive))
-
-counts_np205_m<-melt(counts_np205)
-
-counts_np396<-data.frame(t(rbind(np396naive_c,np396eff_c)))
-colnames(counts_np396)<-c("naive", "effector")
-counts_np396$id<-rownames(counts_np396)
-counts_np396[c("epitope","LCMV", "mouse")]<-str_split_fixed(counts_np396$id, "[.]", 3)
-
-g<-counts_np396[(counts_np396$LCMV == "LCMV8"),]
-print(wilcox.test(g$effector,counts_np396$naive))
-
-counts_np396_m<-melt(counts_np396)
-
-counts_m<-rbind(counts_gp66_m, counts_gp92_m, counts_np205_m, counts_np396_m)
-
-
-counts_m$LCMV<-factor(counts_m$LCMV, levels = c("PBS", "LCMV8", "LCMV40"))
-
-p<-ggplot(counts_m) + 
-  geom_point(aes(x = LCMV, y = value, color = variable), 
-              position = position_dodge(width = 0.5), size = 5, alpha = 0.4) +
-  labs(y = "TCR abundance", x = "", col = "") +
-  scale_x_discrete(labels = c("PBS", "day 8", "day 40")) +
-  scale_colour_manual(values = c(effector = "darkseagreen", naive = "darkmagenta")) +
-  facet_wrap(vars(epitope), ncol=2) +
-  theme_classic() + # keep the theme consistent for all our plots
-  theme(axis.text=element_text(size=16),
-        axis.title=element_text(size=16),
-        title=element_text(size=14),
-        strip.text = element_text(size=16))
-
-svg("output_figures/Fig5b_abundance_TCR_LCMV.svg")
-print(p)
-dev.off()
+effector_list<-list(GP66=gp66eff, GP92=gp92eff, NP205=np205eff, NP396=np396eff)
 
 ## Section B - compare direct and inference methods - This still does not work
 
@@ -104,15 +25,27 @@ filenames<-c("NaiveGP66.csv", "NaiveGP92.csv", "NaiveNP205.csv", "NaiveNP396.csv
 i<-1
 k<-1
 for (f in filenames){
-  data<-read.table(paste0(input_folder,f),sep=",",header = TRUE,row.names = 1)
+  data1<-read.table(paste0(input_folder,f),sep=",",header = TRUE,row.names = 1)
   # data_E<-read.table(paste0(input_folder,dir[i]),sep=",",header = TRUE,row.names = 1)
-    
-  print(dim(data))
   
-  name<-colnames(data)[1]
+  print(dim(data1))
+  
+  name<-colnames(data1)[1]
   epitope<-strsplit(name,split="\\.")[[1]][1]
+  
+  eff<-effector_list[[epitope]]
+  cols<-c(paste0(epitope, ".LCMV8.M1"), paste0(epitope, ".LCMV8.M2"), 
+          paste0(epitope, ".LCMV8.M3"), paste0(epitope, ".LCMV8.M4"))
+  counts_eff<-rowSums(eff[cols])
+  good<-names(counts_eff[counts_eff>0])
+  data<-data1[rownames(data1) %in% good,]
+  
   print(epitope)
-
+  print("proportions of effectors kept")
+  print(length(good)/dim(eff)[1])
+  print("proportions of naive kept")
+  print(dim(data)[1]/dim(data1)[1])
+  
   min<-unique(sort(unlist(data),decreasing=FALSE))[2]
   #calculate proportion of each TCR which is zero
   #zeros<-function(x) length(which(data[x,]<min))
@@ -139,7 +72,7 @@ for (f in filenames){
   counts$logbin<-unlist(lapply(counts$log, function(x){ifelse(x <= -6, "< 10^-6", 
                                                               ifelse(x <= -5, "10^-6 - 10^-5", 
                                                                      ifelse(x <= -4, "10^-5 - 10^-4", 
-                                                                           ifelse(x <= -3, "10^-4 - 10^-3", "> 10^-3"))))}))
+                                                                            ifelse(x <= -3, "10^-4 - 10^-3", "> 10^-3"))))}))
   counts_agg<-aggregate(counts$Freq, by=list(logbin = counts$logbin), FUN=sum)
   if ("< 10^-6" %in% counts_agg$logbin){
     all_small<-as.numeric(counts_agg[counts_agg$logbin == "< 10^-6",]$x) + zeros
@@ -151,7 +84,7 @@ for (f in filenames){
   counts_agg<-counts_agg[counts_agg$logbin != "< 10^-6",]
   counts_agg<-rbind(counts_agg, c("< 10^-6", all_small))
   counts_agg$logbin<-factor(counts_agg$logbin, 
-                        levels = c("< 10^-6", "10^-6 - 10^-5", "10^-5 - 10^-4", "10^-4 - 10^-3", "> 10^-3"))
+                            levels = c("< 10^-6", "10^-6 - 10^-5", "10^-5 - 10^-4", "10^-4 - 10^-3", "> 10^-3"))
   counts_agg$x<-as.numeric(as.character(counts_agg$x))
   counts_agg$x<-counts_agg$x/totals[k]
   print(counts_agg)
@@ -183,7 +116,7 @@ for (f in filenames){
   counts_agg<-aggregate(counts$Freq, by=list(logbin = counts$logbin), FUN=sum)
   counts_agg[counts_agg$logbin == "< 10^-6",]$x <- counts_agg[counts_agg$logbin == "< 10^-6",]$x + zeros
   counts_agg$logbin<-factor(counts_agg$logbin, 
-                        levels = c("< 10^-6", "10^-6 - 10^-5", "10^-5 - 10^-4", "10^-4 - 10^-3", "> 10^-3"))
+                            levels = c("< 10^-6", "10^-6 - 10^-5", "10^-5 - 10^-4", "10^-4 - 10^-3", "> 10^-3"))
   counts_agg$x<-counts_agg$x/totals[k]
   counts_agg$epitope<-epitope
   counts_agg$type<-"direct"
@@ -191,7 +124,7 @@ for (f in filenames){
   counts_all<-rbind(counts_all, counts_agg)
   
   # rm(counts_agg)
-
+  
   k<-k+1
   cat(k,"\n")
   rm(data)
@@ -318,8 +251,8 @@ p1<-ggplot(counts_all_agg) +
         title=element_text(size=14),
         axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
         legend.text=element_text(size=12)) + theme(aspect.ratio = 1.3)
-  # ylim(0, 600)
+# ylim(0, 600)
 
-svg("output_figures/Fig5c_sharing_estimate_TCR_LCMV.svg")
+svg("output_figures/Fig5c_sharing_estimate_TCR_LCMV_day8.svg")
 print(p1)
 dev.off()
