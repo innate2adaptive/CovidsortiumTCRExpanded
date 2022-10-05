@@ -5,6 +5,7 @@ library(igraph)
 library(stringdist)
 library(tidyr)
 library(dplyr)
+library(plyr)
 library(data.table)
 library(pheatmap)
 library(circlize)
@@ -30,6 +31,11 @@ file2<-"data/exp_AB_merge_2.txt"
 epitopes<-read.table(file=file1,sep="\t",stringsAsFactors = FALSE,header = TRUE)
 matches1<-read.table(file=file2,sep="\t",stringsAsFactors = FALSE,header = TRUE)
 
+matches2<-ddply(matches1,colnames(matches1)[1:9],numcolwise(sum))
+df<-matches2[10:dim(matches2)[2]]
+df[df > 0] <- 1
+matches2[10:dim(matches2)[2]]<-df
+
 ########################################################################################
 #Fig 1c
 
@@ -43,14 +49,16 @@ i_PCR<-which(exp_AB_wide3$control==FALSE)
 length(unique(exp_AB_wide3$junction_aa[i_PCR]))
 
 #remove annotated TCRs which are not in exp_AB_wide3 (may have been removed as MAITs)
-both<-match(matches1$junction_aa,unique(exp_AB_wide3$junction_aa[i_PCR]))
-matches<-matches1[which(!is.na(both)),]
+both<-match(matches2$junction_aa,unique(exp_AB_wide3$junction_aa[i_PCR]))
+matches<-matches2[which(!is.na(both)),]
 
 mat<-matches[,10:40]
 i_zero<-which(matches[,10:40]==0,arr.ind = TRUE)
 i_one<-which(matches[,10:40]==1,arr.ind = TRUE)
 
-CDR3<-paste0(1:240,rep("_",240),matches$junction_aa)
+matches<-matches[order(matches$Source, matches$Chain, matches$CD8_CD4),]
+
+CDR3<-paste0(1:dim(matches)[1],rep("_",dim(matches)[1]),matches$junction_aa)
 mat[i_zero]<-"no"
 mat[i_one]<-"yes"
 rownames(mat)<-CDR3
@@ -143,7 +151,7 @@ p<-ggplot(timecourse) +
         axis.title=element_text(size=16),
         title=element_text(size=14))
 
-svg(paste0(folder_plots, "FigS11_timecourse_expanded_annotated.svg"))
+svg(paste0(folder_plots, "FigS10_timecourse_expanded_annotated.svg"))
 print(p)
 dev.off()
 

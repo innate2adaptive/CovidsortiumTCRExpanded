@@ -26,18 +26,18 @@ Need to run twice, once for alpha, and once for beta. Produces plots; and a list
 
 - [x] **1E, F** script_3.R - plots dynamics for each patient separately.
 
-- [ ] **2A, B, C** annotated_overlap.R - looks at the overlap with expanded and with controls (generated with controls_long.R), plots the venn diagram and the bar plot.
+- [x] **2A, B, C** annotated_overlap.R - looks at the overlap with expanded and with controls (generated with controls_long.R), plots the venn diagram and the bar plot.
 
 *controls numbers generated with old controls to figure out code. Need to re-run with controls from myriad when done*
-*script not finished - follow instructions in script to generate correct barplots, like Benny's*
+*missing p-value test for 2C - what test had Benny done?*
 
-- [ ] **2D** script_4.R Section C. 
+- [x] **2D** script_4.R Section C. 
 
 script_4.R uses exp_AB_merge2.txt, which is the list of annotated TCRs. There is no “script” for generating this. It is constructed semi-manually from the annotation data from Tao as well as what was in VDJdb and the Franics et al. paper.
 
-- [ ] **2E** script_4.R, Section A. Save heatmap and legend separately.
+- [x] **2E** script_4.R, Section A. Save heatmap and legend separately.
 
-- [ ] **2F** script_5.R - calculates and plots clustering. Note: this clustering keeps duplicates, so that you see multiple nodes when the same cdr3 is present in multiple patients.
+- [x] **2F** script_5.R - calculates and plots clustering. Note: this clustering keeps duplicates, so that you see multiple nodes when the same cdr3 is present in multiple patients.
 
 - [ ] **Fig 3** - emerson1.R: uses the whole (unique) non-expanded set and the whole (unique) expanded set to compare sharing levels and precursor frequencies.
 
@@ -55,7 +55,7 @@ script_4.R uses exp_AB_merge2.txt, which is the list of annotated TCRs. There is
 
 - [x] **S2** script_2.R, Section A - 2 separate heatmaps for PCR+ and PCR-
 
-- [ ] **S3** script_S3.R
+- [x] **S3** script_S3.R
 
 - [x] **S4** bulk_analysis_all.R, this takes all_A_long.Rdata and all_B_long.Rdata as input, and calculates some of the standard bulk metrics. The script then saves the results. This is equivalent to bulk_analysis_expanded.R. Then plot with FigS4.R.
 
@@ -69,7 +69,7 @@ script_4.R uses exp_AB_merge2.txt, which is the list of annotated TCRs. There is
 
 - [x] **S9** Plots from Yanchun Peng
 
-- [ ] **S10** script_4.R Section B
+- [x] **S10** script_4.R Section B
 
 - [ ] **S11** script_6.R - calculates clustering at various threshold and compares expanded vs non-expanded controls. This uses controls that are taken from unique CDR3s (controls_long.R) and compares them to the list of unique cdr3s that expand.
 
