@@ -36,7 +36,7 @@ if (chain=="alpha"){
   i_J<-which(data1$j_call=="TRAJ18")
   data2<-data1[-(intersect(i_V,i_J)),]
 
-  nonexp_A_long<-anti_join(data2, exp, by=c("decombinator_id", "ID"))
+  nonexp_A_long<-anti_join(data2, exp, by=c("decombinator_id", "ID")) # takes non-expanded from PCR+
   data2<-nonexp_A_long
 
 rm(data0)
@@ -49,7 +49,7 @@ if (chain=="beta"){
   close(myConnection)
   all_B_long1<-all_B_long[!(duplicated(all_B_long[, c("decombinator_id", "ID")])),]
   all_B_long1<-all_B_long1[all_B_long1$control == FALSE,]
-  nonexp_B_long<-anti_join(all_B_long1, exp, by=c("decombinator_id", "ID"))
+  nonexp_B_long<-anti_join(all_B_long1, exp, by=c("decombinator_id", "ID")) # takes non-expanded from PCR+
   data2<-nonexp_B_long
 rm(all_B_long)
 rm(all_B_long1)}
