@@ -74,7 +74,7 @@ exp.b$pep[exp.b$pep==""]<-"n/a"
 
 
 # function to make graph with all annotations I need
-prepare_graph<-function(exp.a){
+prepare_graph<-function(exp.a, tha){
   kma<-kernelMatrix(sk, exp.a$junction_aa, exp.a$junction_aa)
   ones<-which(kma>0.98)
   kma[ones]<-0
@@ -115,11 +115,11 @@ save_node_info<-function(nodes.a, chain){
   return(nodes.a.1)
 }
 
-km_graph_a<-prepare_graph(exp.a)
-km_graph_b<-prepare_graph(exp.b)
+km_graph_a<-prepare_graph(exp.a, tha)
+km_graph_b<-prepare_graph(exp.b, thb)
 
-# km_graph_a.wc<-prepare_graph(exp.a.wc)
-# km_graph_b.wc<-prepare_graph(exp.b.wc)
+# km_graph_a.wc<-prepare_graph(exp.a.wc, tha)
+# km_graph_b.wc<-prepare_graph(exp.b.wc, thb)
 
 nodes.a<-igraph::as_data_frame(km_graph_a, what="vertices")
 nodes.b<-igraph::as_data_frame(km_graph_b, what="vertices")
@@ -329,7 +329,7 @@ plot_all <- function(g.b.s, col_vector, chain){
     V(g.b.s)$pie.color<-cols
     V(g.b.s)$pie.values<-values1
       
-    name<-paste(folder_plots, "FigS13_", chain, "_clus_epitope.svg", sep="")
+    name<-paste(folder_plots, "FigS12_", chain, "_clus_epitope.svg", sep="")
     svg(name) 
     par(xpd=F, mar=c(8.5,8.5,8.5,8.5))
     plot(g.b.s, edge.width=1.5, vertex.label=NA, vertex.size=3.5,

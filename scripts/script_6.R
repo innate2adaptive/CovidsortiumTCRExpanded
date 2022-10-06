@@ -386,7 +386,7 @@ pa <-p.perc.a +
         axis.title=element_text(size=16),
         title=element_text(size=14))
 
-svg("output_figures/FigS12_alpha.svg")
+svg("output_figures/FigS11_alpha.svg")
 print(pa)
 dev.off()
 
@@ -402,6 +402,6 @@ pb<-p.perc.b +
         axis.title=element_text(size=16),
         title=element_text(size=14))
 
-svg("output_figures/FigS12_beta.svg")
+svg("output_figures/FigS11_beta.svg")
 print(pb)
 dev.off()

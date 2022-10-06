@@ -67,8 +67,8 @@ load("data/output_data/control_beta_1.RData")
 overlap <-list()
 
 for (i in 1:10){
-  a<-sample(control_a[[i]], length(a.exp.nc$junction_aa), replace=TRUE) # remove replace=TRUE when using new controls
-  b<-sample(control_b[[i]], length(b.exp.nc$junction_aa), replace=TRUE)
+  a<-sample(control_a[[i]], length(a.exp.nc$junction_aa)) # remove replace=TRUE when using new controls
+  b<-sample(control_b[[i]], length(b.exp.nc$junction_aa))
   
   x1<-sum(unlist(c(a, b)) %in% c(francis$CDR3, tao$CDR3, vdj.cov$CDR3))
   overlap<-c(overlap, x1)
