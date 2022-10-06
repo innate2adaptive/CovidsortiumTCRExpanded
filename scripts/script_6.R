@@ -16,7 +16,7 @@ folder_plots<-"output_figures/" # don't save to dropbox, so if people use this w
 folder_data<-"data/output_data/"  # don't save to dropbox, so if people use this will save locally
 
 # load data - using low p(gen) controls
-load(paste(folder_data, "exp_AB_wide3.RData", sep=""))
+load("data/output_data/exp_AB_wide3.RData")
 load("data/output_data/control_alpha_1.RData") # this is a set of non-expanded sequences selected at random
 load("data/output_data/control_beta_1.RData") # this is a set of non-expanded sequences selected at random 
 
