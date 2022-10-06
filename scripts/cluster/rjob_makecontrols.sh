@@ -9,7 +9,7 @@
 #$ -l mem=32G
 
 # Set the name of the job. You can change this if you wish.
-#$ -N R_job_1
+#$ -N makeControls
 
 # Set the working directory to somewhere in your scratch space.  This is
 # necessary because the compute nodes cannot write to your $HOME
@@ -17,13 +17,11 @@
 # Replace "<your_UCL_id>" with your UCL user ID
 #$ -wd /home/regmili/Scratch/CovidsortiumTCRExpanded/
 
-# Your work must be done in $TMPDIR (serial jobs particularly)
-cd $TMPDIR
-
 # Load the R module and run your R program
 module -f unload compilers mpi gcc-libs
 module load r/recommended
 
+cd /home/regmili/Scratch/CovidsortiumTCRExpanded/
 R --no-save < /home/regmili/Scratch/CovidsortiumTCRExpanded/scripts/controls_long.R > /home/regmili/myR_job.out
 
 # Preferably, tar-up (archive) all output files to transfer them back
