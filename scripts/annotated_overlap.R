@@ -77,6 +77,17 @@ for (i in 1:10){
 mean(unlist(overlap))
 mean(unlist(overlap))/(length(unique(c(francis$CDR3, tao$CDR3, vdj.cov$CDR3))))*100 # overlap over total number of annotated
 
+contingency_table<-data.frame(
+  "control"<-c(mean(unlist(overlap)), length(control_a[[1]]) + length(control_b[[1]]) - mean(unlist(overlap))),
+  "expanded" <- c(x, dim(a.exp.nc)[1] + dim(b.exp.nc)[1] - x),
+  row.names = c("annotated", "not_annotated"),
+  stringsAsFactors = FALSE
+)
+
+colnames(contingency_table)<-c("control", "expanded")
+
+fisher.test(contingency_table)
+
 # bar plots - look at unique intersect (Benny was using non-unique)
 
 all.cov.a<-unique(c(a.francis$CDR3, a.tao$CDR3, a.vdjdb$CDR3))
@@ -124,6 +135,49 @@ results["EBV", "beta"]<-x.ebv.b
 results["HIV", "alpha"]<-x.hiv.a
 results["HIV", "beta"]<-x.hiv.b
 results["virus"]<-rownames(results)
+
+## calculate significance with fisher test
+
+# 1.CMV
+
+x<-sum(a.exp.nc$junction_aa %in% a.vdj.cmv) +sum(b.exp.nc$junction_aa %in% b.vdj.cmv)
+y<-sum(a.exp.nc$junction_aa %in% all.cov.a) +sum(b.exp.nc$junction_aa %in% all.cov.b)
+
+cont.table.cmv<-data.frame(
+  "cmv" <- c(x, length(a.vdj.cmv) + length(b.vdj.cmv) - x),
+  "covid"<-c(y, length(all.cov.a) + length(all.cov.b) - y),
+  stringsAsFactors = F, 
+  row.names = c("in_expanded", "not_in_expanded")
+  )
+colnames(cont.table.cmv)<-c("cmv", "covid")
+fisher.test(cont.table.cmv)
+
+# 2. EBV
+x<-sum(a.exp.nc$junction_aa %in% a.vdj.ebv) +sum(b.exp.nc$junction_aa %in% b.vdj.ebv)
+y<-sum(a.exp.nc$junction_aa %in% all.cov.a) +sum(b.exp.nc$junction_aa %in% all.cov.b)
+
+cont.table.ebv<-data.frame(
+  "ebv" <- c(x, length(a.vdj.ebv) + length(b.vdj.ebv) - x),
+  "covid"<-c(y, length(all.cov.a) + length(all.cov.b) - y),
+  stringsAsFactors = F, 
+  row.names = c("in_expanded", "not_in_expanded")
+)
+colnames(cont.table.ebv)<-c("ebv", "covid")
+fisher.test(cont.table.ebv)
+
+# 3. HIV - beta only
+x<-sum(b.exp.nc$junction_aa %in% b.vdj.hiv)
+y<-sum(b.exp.nc$junction_aa %in% all.cov.b)
+
+cont.table.hiv<-data.frame(
+  "hiv" <- c(x, length(b.vdj.hiv) - x),
+  "covid"<-c(y, length(all.cov.b) - y),
+  stringsAsFactors = F, 
+  row.names = c("in_expanded", "not_in_expanded")
+)
+colnames(cont.table.hiv)<-c("hiv", "covid")
+fisher.test(cont.table.hiv)
+
 
 library(reshape)
 results_m<-reshape::melt(results)
