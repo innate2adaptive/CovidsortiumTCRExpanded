@@ -29,7 +29,6 @@ Need to run twice, once for alpha, and once for beta. Produces plots; and a list
 - [x] **2A, B, C** annotated_overlap.R - looks at the overlap with expanded and with controls (generated with controls_long.R), plots the venn diagram and the bar plot.
 
 *controls numbers generated with old controls to figure out code. Need to re-run with controls from myriad when done*
-*missing p-value test for 2C - what test had Benny done?*
 
 - [x] **2D** script_4.R Section C. 
 
