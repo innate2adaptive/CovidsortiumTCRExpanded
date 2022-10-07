@@ -15,7 +15,7 @@ rm(exp_AB_wide3)
 # merge with sharing - adds a column which says how many emerson individuals the cdr3 is found in
 sharing_exp<-merge(exp_b, sharing_ems, by.x = "junction_aa", by.y = "aminoAcid", all.x = TRUE) # add sharing info
 sharing_exp[is.na(sharing_exp$sharing_level),]$sharing_level<-0
-dim(sharing_exp[sharing_exp$sharing_level >= 2,]) # 2,903 as in paper
+dim(sharing_exp[sharing_exp$sharing_level >= 2,]) # 2,648 as in paper
 
 rm(exp_b)
 
@@ -95,7 +95,11 @@ sharing$f<-f
 sharing[sharing$sharing_level<2,]$f<-min(sharing[sharing$sharing_level >= 2,]$f)/10 # for those that we cannot estimate, put a value a factor of 10 lower
 sharing$f_permln<-sharing$f/10^6 # m per million
 
+write.csv(sharing, "data/output_data/Emerson_sharing_levels_calculated.csv")
+
 exp<-sharing[sharing$set=="exp",]
+print(mean(exp$f))
+
 ctrl<-sharing[sharing$set=="ctrl",]
 
 counts_exp <- data.frame(table(exp$f_permln))
