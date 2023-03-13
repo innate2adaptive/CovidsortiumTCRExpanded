@@ -84,7 +84,9 @@ script_4.R uses exp_AB_merge2.txt, which is the list of annotated TCRs. There is
 
 **clean_wide_data.R** takes exp_AB_wide.RData and removes a few TCRs which are very high at -3 or -4 and then go down, because I think they are irrelevant. This provides  exp_AB_wide1.RData. 
 
-On exp_AB_wide1.RData (from data/output_data/ and not from data/, so using the version without manually annotated pGen), you run **remove_invariant.R** to remove MAIT and IkT cells from the expanded list -> obtain exp_AB_wide3.RData
+On exp_AB_wide1.RData (from data/output_data/ and not from data/, so using the version without manually annotated pGen), you run **remove_invariant.R** to remove MAIT and IkT cells from the expanded list -> obtain exp_AB_wide3.RData.
+
+One exp_AB_wide3.RData you run **annotate_max_timepoint.R**. This adds a column to annotated TCRs that come up early vs late, then saves exp_AB_wide4.RData.
 
 **controls_long.R** generates the controls from unique CDR3s. These are the controls used in the current figures - does not run locally on my laptop, needs a large computer or a cluster.
 

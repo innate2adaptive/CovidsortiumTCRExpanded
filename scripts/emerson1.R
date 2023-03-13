@@ -4,22 +4,7 @@ library(ggplot2)
 library(reshape)
 library(dplyr)
 
-sharing_ems<-readRDS("data/downloaded_data/Emerson_sharing_aa.rds")
-load("data/output_data/exp_AB_wide3.RData")
-
-exp_b<-exp_AB_wide3[exp_AB_wide3$chain == "beta",] # emerson set only has beta
-exp_b<-exp_b[!duplicated(exp_b[,c("junction_aa")]),]
-
-rm(exp_AB_wide3)
-
-# merge with sharing - adds a column which says how many emerson individuals the cdr3 is found in
-sharing_exp<-merge(exp_b, sharing_ems, by.x = "junction_aa", by.y = "aminoAcid", all.x = TRUE) # add sharing info
-sharing_exp[is.na(sharing_exp$sharing_level),]$sharing_level<-0
-dim(sharing_exp[sharing_exp$sharing_level >= 2,]) # 2,648 as in paper
-
-rm(exp_b)
-
-options(timeout = max(1000, getOption("timeout"))) # increasing timeout might be necessary to load the files
+options(timeout = max(10000, getOption("timeout"))) # increasing timeout might be necessary to load the files
 
 myURL<-"https://www.dropbox.com/s/9kl9s4y775wam9z/all_B_long.RData?raw=1"
 myConnection <- url(myURL)
@@ -31,12 +16,44 @@ all_B_long1<-all_B_long[!(duplicated(all_B_long[, c("decombinator_id", "ID")])),
 rm(all_B_long)
 all_B_long1<-all_B_long1[!duplicated(all_B_long1[,c("junction_aa")]),]
 
+# load emerson
+sharing_ems<-readRDS("data/downloaded_data/Emerson_sharing_aa.rds")
+# load expanded
+load("data/output_data/exp_AB_wide4.RData")
+
+exp_b<-exp_AB_wide3[exp_AB_wide3$chain == "beta",] # emerson set only has beta
+exp_b<-exp_b[!duplicated(exp_b[,c("junction_aa")]),]
+exp_b_early<-exp_b[exp_b$max_timepoint_class == 'early',]
+dim(exp_b_early)
+exp_b_late<-exp_b[exp_b$max_timepoint_class == 'late',]
+dim(exp_b_late)
+exp_b_early<-exp_b_early[!duplicated(exp_b_early[,c("junction_aa")]),]
+exp_b_late<-exp_b_late[!duplicated(exp_b_late[,c("junction_aa")]),]
+
+rm(exp_AB_wide3)
+
+# merge with sharing - adds a column which says how many emerson individuals the cdr3 is found in
+sharing_exp<-merge(exp_b, sharing_ems, by.x = "junction_aa", by.y = "aminoAcid", all.x = TRUE) # add sharing info
+sharing_exp[is.na(sharing_exp$sharing_level),]$sharing_level<-0
+
+sharing_exp_early<-merge(exp_b_early, sharing_ems, by.x = "junction_aa", by.y = "aminoAcid", all.x = TRUE) # add sharing info
+sharing_exp_early[is.na(sharing_exp_early$sharing_level),]$sharing_level<-0
+
+sharing_exp_late<-merge(exp_b_late, sharing_ems, by.x = "junction_aa", by.y = "aminoAcid", all.x = TRUE) # add sharing info
+sharing_exp_late[is.na(sharing_exp_late$sharing_level),]$sharing_level<-0
+
+dim(sharing_exp[sharing_exp$sharing_level >= 2,]) # 2,648 as in paper
+dim(sharing_exp_early[sharing_exp_early$sharing_level >= 2,]) #
+dim(sharing_exp_late[sharing_exp_late$sharing_level >= 2,]) #
+
+rm(exp_b)
+rm(exp_b_early)
+rm(exp_b_late)
+
 all_B_long1$ID<-as.character(all_B_long1$ID)
 sharing_exp$ID<-as.character(sharing_exp$ID)
 nonexp_B_long<-anti_join(all_B_long1, sharing_exp, by=c("decombinator_id", "ID")) # remove expanded from the list
 rm(all_B_long1)
-
-# nonexp_B_long<-nonexp_B_long[!duplicated(nonexp_B_long$junction_aa),]
 
 # merge with sharing - adds a column which says how many emerson individuals the cdr3 is found in
 sharing_ctrl_B<-merge(nonexp_B_long, sharing_ems, by.x = "junction_aa", by.y = "aminoAcid", all.x = TRUE) # add sharing info
@@ -47,6 +64,8 @@ dim(sharing_ctrl_B[sharing_ctrl_B$sharing_level >= 2,]) #
 
 sharing_ctrl_B$set<-"ctrl"
 sharing_exp$set<-"exp"
+sharing_exp_early$set<-"early"
+sharing_exp_late$set<-"late"
 
 sharing<-rbind(sharing_ctrl_B[c("junction_aa", "sharing_level", "ID", "decombinator_id", "set")], sharing_exp[c("junction_aa", "sharing_level", "ID", "decombinator_id", "set")])
 
