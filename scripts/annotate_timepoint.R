@@ -16,8 +16,8 @@ hist(exp_AB_wide3[exp_AB_wide3$max_timepoint_class == 'late',]$proportion_0,
 hist(exp_AB_wide3[exp_AB_wide3$max_timepoint_class == 'late',]$proportion_1, 
      breaks = seq(from=0, to=700, by=10))
 
-exp_AB_wide3[exp_AB_wide3$max_timepoint_class == 'late' & (exp_AB_wide3$proportion_0>50 | exp_AB_wide3$proportion_1>50),]$max_timepoint_class <- 'und'
-exp_AB_wide3[exp_AB_wide3$max_timepoint_class == 'early' & exp_AB_wide3$proportion_0<50 & exp_AB_wide3$proportion_1<50,]$max_timepoint_class <- 'und'
+exp_AB_wide3[exp_AB_wide3$max_timepoint_class == 'late' & (exp_AB_wide3$proportion_0>8 | exp_AB_wide3$proportion_1>8 | exp_AB_wide3$proportion_2>8),]$max_timepoint_class <- 'und'
+exp_AB_wide3[exp_AB_wide3$max_timepoint_class == 'early' & exp_AB_wide3$proportion_0<100 & exp_AB_wide3$proportion_1<100,]$max_timepoint_class <- 'und'
 
 exp_AB_wide3[exp_AB_wide3$control == T, ]$max_timepoint_class <- 'und'
 
@@ -26,8 +26,8 @@ exp_melt<-melt(data.frame(exp_AB_wide3[!is.na(exp_AB_wide3$max_timepoint),c('pro
 
 exp_melt1<-exp_melt[exp_melt$max_timepoint_class != 'und',]
 
-p<-ggplot(exp_melt1) +
-  geom_jitter(aes(x=variable, y = value, col = max_timepoint_class), alpha = 0.2, position = position_dodge(width = 0.1), size = 3) +
+p<-ggplot(exp_melt) +
+  geom_jitter(aes(x=variable, y = value, col = max_timepoint_class), alpha = 0.2, position = position_dodge(width = 0.1), size = 2) +
   geom_line(aes(x=variable, y = value, col = max_timepoint_class, group = junction), alpha = 0.1) +
   scale_color_manual(values = c(early = "darkorange2", late = "cyan3", und='grey')) +
   scale_y_continuous(trans="log10") +

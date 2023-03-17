@@ -3,6 +3,7 @@
 library(ggplot2)
 library(reshape)
 library(dplyr)
+library(data.table)
 
 options(timeout = max(10000, getOption("timeout"))) # increasing timeout might be necessary to load the files
 
@@ -14,37 +15,48 @@ close(myConnection)
 # the data is in long format, so first I keep only one entry for each tcr in each patient (here I have multiple entries for multiple timepoints)
 all_B_long1<-all_B_long[!(duplicated(all_B_long[, c("decombinator_id", "ID")])),]
 rm(all_B_long)
-all_B_long1<-all_B_long1[!duplicated(all_B_long1[,c("junction_aa")]),]
+all_B_long1<-all_B_long1[!duplicated(all_B_long1[,c("v_call", "j_call", "junction_aa")]),]
 
 # load emerson
-sharing_ems<-readRDS("data/downloaded_data/Emerson_sharing_aa.rds")
+# sharing_ems<-readRDS("data/downloaded_data/Emerson_sharing_aa.rds")
+sharing_ems1<-fread("data/output_data/emerson_publicity_counts.csv.gz")
+colnames(sharing_ems1)<-c("V1", "amino_acid", "v_gene", "j_gene", "sharing_level")
 # load expanded
 load("data/output_data/exp_AB_wide4.RData")
 
 exp_b<-exp_AB_wide3[exp_AB_wide3$chain == "beta",] # emerson set only has beta
-exp_b<-exp_b[!duplicated(exp_b[,c("junction_aa")]),]
+exp_b<-exp_b[!duplicated(exp_b[,c("v_call", "j_call","junction_aa")]),]
 exp_b_early<-exp_b[exp_b$max_timepoint_class == 'early',]
 dim(exp_b_early)
 exp_b_late<-exp_b[exp_b$max_timepoint_class == 'late',]
 dim(exp_b_late)
-exp_b_early<-exp_b_early[!duplicated(exp_b_early[,c("junction_aa")]),]
-exp_b_late<-exp_b_late[!duplicated(exp_b_late[,c("junction_aa")]),]
+exp_b_early<-exp_b_early[!duplicated(exp_b_early[,c("v_call", "j_call","junction_aa")]),]
+exp_b_late<-exp_b_late[!duplicated(exp_b_late[,c("v_call", "j_call","junction_aa")]),]
 
 rm(exp_AB_wide3)
 
 # merge with sharing - adds a column which says how many emerson individuals the cdr3 is found in
-sharing_exp<-merge(exp_b, sharing_ems, by.x = "junction_aa", by.y = "aminoAcid", all.x = TRUE) # add sharing info
+sharing_exp<-merge(exp_b, sharing_ems1, 
+                   by.x = c("v_call", "j_call","junction_aa"), 
+                   by.y = c("v_gene", "j_gene","amino_acid"), 
+                   all.x = TRUE) # add sharing info
 sharing_exp[is.na(sharing_exp$sharing_level),]$sharing_level<-0
 
-sharing_exp_early<-merge(exp_b_early, sharing_ems, by.x = "junction_aa", by.y = "aminoAcid", all.x = TRUE) # add sharing info
+sharing_exp_early<-merge(exp_b_early, sharing_ems1, 
+                         by.x = c("v_call", "j_call","junction_aa"), 
+                         by.y = c("v_gene", "j_gene","amino_acid"), 
+                         all.x = TRUE) # add sharing info
 sharing_exp_early[is.na(sharing_exp_early$sharing_level),]$sharing_level<-0
 
-sharing_exp_late<-merge(exp_b_late, sharing_ems, by.x = "junction_aa", by.y = "aminoAcid", all.x = TRUE) # add sharing info
+sharing_exp_late<-merge(exp_b_late, sharing_ems1, 
+                        by.x = c("v_call", "j_call","junction_aa"), 
+                        by.y = c("v_gene", "j_gene","amino_acid"), 
+                        all.x = TRUE) # add sharing info
 sharing_exp_late[is.na(sharing_exp_late$sharing_level),]$sharing_level<-0
 
-dim(sharing_exp[sharing_exp$sharing_level >= 2,]) # 2,648 as in paper
-dim(sharing_exp_early[sharing_exp_early$sharing_level >= 2,]) # 455
-dim(sharing_exp_late[sharing_exp_late$sharing_level >= 2,]) # 123
+dim(sharing_exp[sharing_exp$sharing_level >= 2,]) # 928 as in paper
+dim(sharing_exp_early[sharing_exp_early$sharing_level >= 2,]) # 135
+dim(sharing_exp_late[sharing_exp_late$sharing_level >= 2,]) # 71
 
 rm(exp_b)
 rm(exp_b_early)
@@ -56,11 +68,12 @@ nonexp_B_long<-anti_join(all_B_long1, sharing_exp, by=c("decombinator_id", "ID")
 rm(all_B_long1)
 
 # merge with sharing - adds a column which says how many emerson individuals the cdr3 is found in
-sharing_ctrl_B<-merge(nonexp_B_long, sharing_ems, by.x = "junction_aa", by.y = "aminoAcid", all.x = TRUE) # add sharing info
+sharing_ctrl_B<-merge(nonexp_B_long, sharing_ems1, 
+                      by.x = c("v_call", "j_call","junction_aa"), 
+                      by.y = c("v_gene", "j_gene","amino_acid"), 
+                      all.x = TRUE) # add sharing info
 sharing_ctrl_B[is.na(sharing_ctrl_B$sharing_level),]$sharing_level<-0
-dim(sharing_ctrl_B[sharing_ctrl_B$sharing_level >= 2,]) # 
-
-# rm(sharing)
+dim(sharing_ctrl_B[sharing_ctrl_B$sharing_level >= 2,]) # 1136870
 
 sharing_ctrl_B$set<-"ctrl"
 sharing_exp$set<-"exp"
