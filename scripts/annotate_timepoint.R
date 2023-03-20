@@ -46,4 +46,3 @@ print(p)
 dev.off()
 
 save(exp_AB_wide3,file=  "data/output_data/exp_AB_wide4.RData")
-write.csv(exp_AB_wide3,file=  "data/output_data/exp_AB_wide4.csv")
