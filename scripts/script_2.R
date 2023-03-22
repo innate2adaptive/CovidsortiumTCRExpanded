@@ -15,10 +15,11 @@ folder_data<-"data/output_data/"  # don't save to dropbox, so if people use this
 
 #load annotated TCR set
 data<-read.table("data/data.txt",header=TRUE,sep="\t")
+View(data)
 PCR<-read.table("data/TCR_rep_HCW_18_12_2020_b.txt",header=TRUE,sep="\t",stringsAsFactors = FALSE)
 PCR_dat<-right_join(PCR,data,by =c("Sample.ID"="Sample_ID"))
 rownames(data)<-data$Sample_ID
-annotations<-data[,c(8,10,11)]
+annotations<-data[,c(10,11)]
 rownames(annotations)<-data$Sample_ID
 mat_PCR<-PCR_dat[,2:7]
 i_pos<-which(mat_PCR=="+++",arr.ind = TRUE)
