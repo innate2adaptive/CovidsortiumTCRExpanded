@@ -1,7 +1,7 @@
 # HCW alpha pgen
 
 library(ggplot2)
-library(dplyr)
+library(plyr)
 
 dfa<-read.csv("data/output_data/exp_A_wide5_pgen.csv")
 dfa<-dfa[dfa$pgen>0,]
@@ -19,7 +19,7 @@ dfa.new$pgen_log10<-as.numeric(as.character(dfa.new$pgen_log10))
 dfa.new$max_timepoint_class<-factor(dfa.new$max_timepoint_class, 
                                 levels=c("und", "early", "late"))
 
-ggplot(dfa.new,aes(x = pgen_log10, fill=max_timepoint_class, color=max_timepoint_class))+
+p<-ggplot(dfa.new,aes(x = pgen_log10, fill=max_timepoint_class, color=max_timepoint_class))+
   geom_bar(aes(y=prop), stat="identity", position="identity", alpha = 0.5) +
   scale_fill_manual(values = c(early = "darkorange2", late = "cyan3", und='grey')) +
   scale_color_manual(values = c(early = "darkorange2", late = "cyan3", und='grey')) +
@@ -32,6 +32,9 @@ ggplot(dfa.new,aes(x = pgen_log10, fill=max_timepoint_class, color=max_timepoint
         axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
         legend.text=element_text(size=12)) + theme(aspect.ratio = 0.9)
 
+svg("output_figures/pgen_HCWa.svg")
+print(p)
+dev.off()
 
 dfb<-read.csv("data/output_data/exp_B_wide5_pgen.csv")
 dfb<-dfb[dfb$pgen>0,]
@@ -49,7 +52,7 @@ dfb.new$pgen_log10<-as.numeric(as.character(dfb.new$pgen_log10))
 dfb.new$max_timepoint_class<-factor(dfb.new$max_timepoint_class, 
                                     levels=c("und", "early", "late"))
 
-ggplot(dfb.new,aes(x = pgen_log10, fill=max_timepoint_class, color=max_timepoint_class))+
+p1<-ggplot(dfb.new,aes(x = pgen_log10, fill=max_timepoint_class, color=max_timepoint_class))+
   geom_bar(aes(y=prop), stat="identity", position="identity", alpha = 0.5) +
   scale_fill_manual(values = c(early = "darkorange2", late = "cyan3", und='grey')) +
   scale_color_manual(values = c(early = "darkorange2", late = "cyan3", und='grey')) +
@@ -61,6 +64,9 @@ ggplot(dfb.new,aes(x = pgen_log10, fill=max_timepoint_class, color=max_timepoint
         title=element_text(size=14),
         axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
         legend.text=element_text(size=12)) + theme(aspect.ratio = 0.9)
+svg("output_figures/pgen_HCWb.svg")
+print(p1)
+dev.off()
 
 lcmv<-read.csv("data/output_data/LCMV_pgen.csv")
 lcmv<-lcmv[lcmv$pgen>0,]
@@ -77,7 +83,7 @@ lcmv.new$pgen_log10<-as.numeric(as.character(lcmv.new$pgen_log10))
 lcmv.new$condition<-factor(lcmv.new$condition, 
                                      levels=c("PBS", "LCMV8", "LCMV40"))
 
-ggplot(lcmv.new,aes(x = pgen_log10, fill=condition, color=condition))+
+p2<-ggplot(lcmv.new,aes(x = pgen_log10, fill=condition, color=condition))+
   geom_bar(aes(y=prop), stat="identity", position="identity", alpha = 0.5) +
   scale_fill_manual(values = c(LCMV8 = "darkorange2", LCMV40 = "cyan3", PBS='grey'))+
   scale_color_manual(values = c(LCMV8 = "darkorange2", LCMV40 = "cyan3", PBS='grey')) +
@@ -89,3 +95,10 @@ ggplot(lcmv.new,aes(x = pgen_log10, fill=condition, color=condition))+
         title=element_text(size=14),
         axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
         legend.text=element_text(size=12)) + theme(aspect.ratio = 0.9)
+svg("output_figures/pgen_LCMV.svg")
+print(p2)
+dev.off()
+
+print(p)
+print(p1)
+print(p2)
