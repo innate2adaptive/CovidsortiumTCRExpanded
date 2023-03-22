@@ -4,7 +4,7 @@ library(ggplot2)
 library(plyr)
 
 dfa<-read.csv("data/output_data/exp_A_wide5_pgen.csv")
-dfa<-dfa[dfa$pgen>0,]
+dfa<-dfa[(dfa$pgen>0) & (dfa$control == "False"),]
 dfa<-dfa[!duplicated(dfa[,c("v_call", "junction_aa")]),]
 dfa$pgen<-as.numeric(as.character(dfa$pgen))
 dfa$pgen_log10<-round(log10(dfa$pgen))
@@ -37,7 +37,7 @@ print(p)
 dev.off()
 
 dfb<-read.csv("data/output_data/exp_B_wide5_pgen.csv")
-dfb<-dfb[dfb$pgen>0,]
+dfb<-dfb[(dfb$pgen) & (dfb$control == "False")>0,]
 dfb<-dfb[!duplicated(dfb[,c("v_call", "junction_aa")]),]
 dfb$pgen<-as.numeric(as.character(dfb$pgen))
 dfb$pgen_log10<-round(log10(dfb$pgen))
