@@ -11,18 +11,13 @@ exp_AB_wide3['max_timepoint_class']<-unlist(lapply(exp_AB_wide3$max_timepoint, f
                                             ifelse(x %in% c('proportion_0', 'proportion_1'), "early",
                                             ifelse(x %in% c('proportion_3', 'proportion_4'), "late",
                                             "und"))}))
-# hist(exp_AB_wide3[exp_AB_wide3$max_timepoint_class == 'late',]$proportion_0, 
-#      breaks = seq(from=0, to=410, by=10))
-# hist(exp_AB_wide3[exp_AB_wide3$max_timepoint_class == 'late',]$proportion_1, 
-#      breaks = seq(from=0, to=700, by=10))
 
-exp_AB_wide3[exp_AB_wide3$control == T,]$max_timepoint_class <-'und'
+exp_AB_wide3[exp_AB_wide3$control == TRUE, ]$max_timepoint_class <- 'und'
 exp_AB_wide3[exp_AB_wide3$max_timepoint_class == 'late' & 
                ((exp_AB_wide3$proportion_0>10 | exp_AB_wide3$proportion_1>10) | 
                (exp_AB_wide3$proportion_3<100 & exp_AB_wide3$proportion_4 < 100)),]$max_timepoint_class <- 'und'
-exp_AB_wide3[exp_AB_wide3$max_timepoint_class == 'early' & exp_AB_wide3$proportion_0<100 & exp_AB_wide3$proportion_1<100,]$max_timepoint_class <- 'und'
-
-exp_AB_wide3[exp_AB_wide3$control == "True", ]$max_timepoint_class <- 'und'
+exp_AB_wide3[(exp_AB_wide3$max_timepoint_class == 'early') & 
+               (exp_AB_wide3$proportion_0<100 & exp_AB_wide3$proportion_1<100),]$max_timepoint_class <- 'und'
 
 exp_melt<-melt(data.frame(exp_AB_wide3[!is.na(exp_AB_wide3$max_timepoint),c('proportion_0', 'proportion_1', 'proportion_2', 'proportion_3', 'proportion_4', 'proportion_14', 'max_timepoint_class', 'junction', 'ID')]),
               id = c('junction', 'ID', 'max_timepoint_class'))
@@ -50,3 +45,4 @@ dev.off()
 
 save(exp_AB_wide3,file=  "data/output_data/exp_AB_wide4.RData")
 write.csv(exp_AB_wide3,file=  "data/output_data/exp_AB_wide4.csv")
+

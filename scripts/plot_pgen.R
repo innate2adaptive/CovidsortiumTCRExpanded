@@ -5,7 +5,7 @@ library(plyr)
 
 dfa<-read.csv("data/output_data/exp_A_wide5_pgen.csv")
 dfa<-dfa[(dfa$pgen>0) & (dfa$control == "False"),]
-dfa<-dfa[!duplicated(dfa[,c("v_call", "junction_aa")]),]
+dfa<-dfa[!duplicated(dfa[,c("v_call", "junction_aa")]),] # to make it comparable to emerson
 dfa$pgen<-as.numeric(as.character(dfa$pgen))
 dfa$pgen_log10<-round(log10(dfa$pgen))
 dfa$pgen_log10<-as.numeric(as.character(dfa$pgen_log10))
@@ -38,7 +38,7 @@ dev.off()
 
 dfb<-read.csv("data/output_data/exp_B_wide5_pgen.csv")
 dfb<-dfb[(dfb$pgen) & (dfb$control == "False")>0,]
-dfb<-dfb[!duplicated(dfb[,c("v_call", "junction_aa")]),]
+dfb<-dfb[!duplicated(dfb[,c("v_call", "junction_aa")]),] # to make it comparable to emerson
 dfb$pgen<-as.numeric(as.character(dfb$pgen))
 dfb$pgen_log10<-round(log10(dfb$pgen))
 dfb$pgen_log10<-as.numeric(as.character(dfb$pgen_log10))
@@ -70,6 +70,7 @@ dev.off()
 
 lcmv<-read.csv("data/output_data/LCMV_pgen.csv")
 lcmv<-lcmv[lcmv$pgen>0,]
+lcmv<-lcmv[!duplicated(lcmv$junction_aa), ]# to make it comparable to precursor analysis
 lcmv$pgen<-as.numeric(as.character(lcmv$pgen))
 lcmv$pgen_log10<-round(log10(lcmv$pgen))
 lcmv$pgen_log10<-as.numeric(as.character(lcmv$pgen_log10))
@@ -102,3 +103,4 @@ dev.off()
 print(p)
 print(p1)
 print(p2)
+
