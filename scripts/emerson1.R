@@ -5,29 +5,12 @@ library(reshape)
 library(dplyr)
 library(data.table)
 
-options(timeout = max(10000, getOption("timeout"))) # increasing timeout might be necessary to load the files
-
-myURL<-"https://www.dropbox.com/s/9kl9s4y775wam9z/all_B_long.RData?raw=1"
-myConnection <- url(myURL)
-print(load(myConnection))
-close(myConnection)
-
-# the data is in long format, so first I keep only one entry for each tcr in each patient (here I have multiple entries for multiple timepoints)
-all_B_long1<-all_B_long[!(duplicated(all_B_long[, c("decombinator_id", "ID")])),]
-rm(all_B_long)
-all_B_long2<-all_B_long1[all_B_long1$control == FALSE,]
-rm(all_B_long1)
-
-# load emerson
-# sharing_ems<-readRDS("data/downloaded_data/Emerson_sharing_aa.rds")
-sharing_ems1<-fread("data/output_data/emerson_publicity_counts.csv.gz")
-colnames(sharing_ems1)<-c("V1", "amino_acid", "v_gene", "sharing_level")
 # load expanded
 load("data/output_data/exp_AB_wide4.RData")
 exp_AB_wide3<-exp_AB_wide3[exp_AB_wide3$control == FALSE,]
 
 exp_b<-exp_AB_wide3[exp_AB_wide3$chain == "beta",] # emerson set only has beta
-exp_b<-exp_b[!duplicated(exp_b[,c("v_call", "junction_aa")]),]
+exp_b<-exp_b[!duplicated(exp_b[,c("v_call", "junction_aa", "max_timepoint_class")]),]
 exp_b_early<-exp_b[exp_b$max_timepoint_class == 'early',]
 dim(exp_b_early)
 exp_b_late<-exp_b[exp_b$max_timepoint_class == 'late',]
@@ -36,6 +19,12 @@ exp_b_early<-exp_b_early[!duplicated(exp_b_early[,c("v_call", "junction_aa")]),]
 exp_b_late<-exp_b_late[!duplicated(exp_b_late[,c("v_call", "junction_aa")]),]
 
 rm(exp_AB_wide3)
+
+nonexp_B_long<-fread("data/output_data/HCW_B_controls_emerson_pGen.csv.gz")
+
+# load emerson
+sharing_ems1<-fread("data/output_data/emerson_publicity_counts.csv.gz")
+colnames(sharing_ems1)<-c("V1", "amino_acid", "v_gene", "sharing_level")
 
 # merge with sharing - adds a column which says how many emerson individuals the cdr3 is found in
 sharing_exp<-merge(exp_b, sharing_ems1, 
@@ -64,12 +53,6 @@ rm(exp_b)
 rm(exp_b_early)
 rm(exp_b_late)
 
-all_B_long2$ID<-as.character(all_B_long2$ID)
-sharing_exp$ID<-as.character(sharing_exp$ID)
-nonexp_B_long<-anti_join(all_B_long2, sharing_exp, by=c("decombinator_id", "ID")) # remove expanded from the list
-rm(all_B_long2)
-nonexp_B_long<-nonexp_B_long[!duplicated(nonexp_B_long[,c("v_call", "junction_aa")]),]
-
 # merge with sharing - adds a column which says how many emerson individuals the cdr3 is found in
 sharing_ctrl_B<-merge(nonexp_B_long, sharing_ems1, 
                       by.x = c("v_call", "junction_aa"), 
@@ -83,7 +66,7 @@ sharing_exp$set<-"exp"
 sharing_exp_early$set<-"early"
 sharing_exp_late$set<-"late"
 
-sharing<-rbind(sharing_ctrl_B[c("junction_aa", "v_call", "sharing_level", "ID", "decombinator_id", "set")], 
+sharing<-rbind(sharing_ctrl_B[,c("junction_aa", "v_call", "sharing_level", "ID", "decombinator_id", "set")], 
                sharing_exp[c("junction_aa", "v_call", "sharing_level", "ID", "decombinator_id", "set")],
                sharing_exp_early[c("junction_aa", "v_call", "sharing_level", "ID", "decombinator_id", "set")],
                sharing_exp_late[c("junction_aa", "v_call", "sharing_level", "ID", "decombinator_id", "set")]
@@ -161,7 +144,7 @@ counts_exp_agg<-aggregate(counts_exp$Freq, by=list(logbin = counts_exp$logbin), 
 p1<-ggplot(counts_exp_agg) +
   geom_bar(aes(x = logbin, y = x), stat = "identity", fill = "deepskyblue2", color = "black") +
   scale_x_discrete(labels = c(bquote('<'*10^-8),bquote(10^-8*' - '*10^-7), 
-                              bquote(10^-7*' - '*10^-6), bquote(10^-6*' - '*10^-5), bquote('>'*10^-5))) +
+                              bquote(10^-7*' - '*10^-6), bquote(10^-6*' - '*10^-5), bquote('>'*10^-5)), drop=FALSE) +
   labs(x = "", y = "number of CDR3s", fill = "") +
   theme_classic() + # keep the theme consistent for all our plots
   theme(axis.text=element_text(size=20),
@@ -187,7 +170,7 @@ counts_early_agg<-aggregate(counts_early$Freq, by=list(logbin = counts_early$log
 p1<-ggplot(counts_early_agg) +
   geom_bar(aes(x = logbin, y = x), stat = "identity", fill = "darkorange", color = "black") +
   scale_x_discrete(labels = c(bquote('<'*10^-8),bquote(10^-8*' - '*10^-7), 
-                              bquote(10^-7*' - '*10^-6), bquote(10^-6*' - '*10^-5), bquote('>'*10^-5))) +
+                              bquote(10^-7*' - '*10^-6), bquote(10^-6*' - '*10^-5), bquote('>'*10^-5)), drop=FALSE) +
   labs(x = "", y = "number of CDR3s", fill = "") +
   theme_classic() + # keep the theme consistent for all our plots
   theme(axis.text=element_text(size=20),
@@ -213,7 +196,7 @@ counts_late_agg<-aggregate(counts_late$Freq, by=list(logbin = counts_late$logbin
 p1<-ggplot(counts_late_agg) +
   geom_bar(aes(x = logbin, y = x), stat = "identity", fill = "cyan2", color = "black") +
   scale_x_discrete(labels = c(bquote('<'*10^-8),bquote(10^-8*' - '*10^-7), 
-                              bquote(10^-7*' - '*10^-6), bquote(10^-6*' - '*10^-5), bquote('>'*10^-5))) +
+                              bquote(10^-7*' - '*10^-6), bquote(10^-6*' - '*10^-5), bquote('>'*10^-5)), drop=FALSE) +
   labs(x = "", y = "number of CDR3s", fill = "") +
   theme_classic() + # keep the theme consistent for all our plots
   theme(axis.text=element_text(size=20),
@@ -242,7 +225,7 @@ library(scales)
 p2<-ggplot(counts_ctrl_agg) +
   geom_bar(aes(x = logbin, y = x), stat = "identity", fill = "ivory1", color = "black") +
   scale_x_discrete(labels = c(bquote('<'*10^-8),bquote(10^-8*' - '*10^-7), 
-                              bquote(10^-7*' - '*10^-6), bquote(10^-6*' - '*10^-5), bquote('>'*10^-5))) +
+                              bquote(10^-7*' - '*10^-6), bquote(10^-6*' - '*10^-5), bquote('>'*10^-5)), drop=FALSE) +
   scale_y_continuous(labels = label_number()) +
   labs(x = "", y = "number of CDR3s", fill = "") +
   theme_classic() + # keep the theme consistent for all our plots
