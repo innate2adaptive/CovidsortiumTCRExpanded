@@ -165,32 +165,32 @@ dev.off()
 lcmv<-read.csv("data/output_data/LCMV_pgen.csv")
 lcmv<-lcmv[lcmv$pgen>0,]
 lcmv<-lcmv[lcmv$condition != "PBS",] # we are not interested in these
-lcmv<-lcmv[!duplicated(lcmv[,c("junction_aa","condition")]), ]# to make it comparable to precursor analysis
+lcmv<-lcmv[!duplicated(lcmv[,c("junction_aa","day")]), ]# to make it comparable to precursor analysis
 lcmv_c<-read.csv("data/output_data/LCMV_controls_pgen.csv")
 lcmv_c$condition<-"controls"
 lcmv_c<-lcmv_c[lcmv_c$pgen>0,]
-lcmv_c<-lcmv_c[!duplicated(lcmv_c[,c("junction_aa","condition")]), ]# to make it comparable to precursor analysis
-lcmv1<-rbind(lcmv[,c("junction_aa", "condition", "pgen")], 
-             lcmv_c[,c("junction_aa", "condition", "pgen")])
+lcmv_c<-lcmv_c[!duplicated(lcmv_c[,c("junction_aa","day")]), ]# to make it comparable to precursor analysis
+lcmv1<-rbind(lcmv[,c("junction_aa", "day", "pgen")], 
+             lcmv_c[,c("junction_aa", "day", "pgen")])
 lcmv1$pgen<-as.numeric(as.character(lcmv1$pgen))
 lcmv1$pgen_log10<-round(log10(lcmv1$pgen))
 lcmv1$pgen_log10<-as.numeric(as.character(lcmv1$pgen_log10))
 
-lcmv1$condition<-factor(lcmv1$condition, 
-                       levels=c("controls","LCMV8", "LCMV40"))
+lcmv1$day<-factor(lcmv1$day, 
+                       levels=c("controls","day8", "day40"))
 
-lcmv.new<-ddply(lcmv1,.(condition),summarise,
+lcmv.new<-ddply(lcmv1,.(day),summarise,
              prop=prop.table(table(pgen_log10)),
              pgen_log10=names(table(pgen_log10)))
 lcmv.new$pgen_log10<-as.numeric(as.character(lcmv.new$pgen_log10))
 lcmv.new$prop<-as.numeric(as.character(lcmv.new$prop))
-lcmv.new$condition<-factor(lcmv.new$condition, 
-                                     levels=c("controls", "LCMV8", "LCMV40"))
+lcmv.new$day<-factor(lcmv.new$day, 
+                                     levels=c("controls", "day8", "day40"))
 
-p2<-ggplot(lcmv.new,aes(x = pgen_log10, y=prop, fill=condition, color=condition))+
+p2<-ggplot(lcmv.new,aes(x = pgen_log10, y=prop, fill=day, color=day))+
   geom_col(position=position_dodge(preserve="single", width=0.8), width=0.5) +
-  scale_fill_manual(values = c(LCMV8 = "darkorange2", LCMV40 = "cyan3", controls='gainsboro')) +
-  scale_color_manual(values = c(LCMV8 = "darkorange2", LCMV40 = "cyan3", controls='gray')) +
+  scale_fill_manual(values = c(day8 = "darkorange2", day40 = "cyan3", controls='gainsboro')) +
+  scale_color_manual(values = c(day8 = "darkorange2", day40 = "cyan3", controls='gray')) +
   xlim(-23,-4) +
   labs(x = "log10(pgen)", y = "proportion of V/CDR3s", fill = "", color = "") +
   theme_classic() + # keep the theme consistent for all our plots
@@ -204,10 +204,10 @@ svg("output_figures/pgen_LCMV.svg")
 print(p2)
 dev.off()
 
-p21<-ggplot(lcmv.new,aes(x = pgen_log10, y=prop, fill=condition, color=condition))+
+p21<-ggplot(lcmv.new,aes(x = pgen_log10, y=prop, fill=day, color=day))+
   geom_line(size=0.8) + geom_point(size=3) +
-  scale_fill_manual(values = c(LCMV8 = "darkorange2", LCMV40 = "cyan3", controls='gainsboro')) +
-  scale_color_manual(values = c(LCMV8 = "darkorange2", LCMV40 = "cyan3", controls='gray')) +
+  scale_fill_manual(values = c(day8 = "darkorange2", day40 = "cyan3", controls='gainsboro')) +
+  scale_color_manual(values = c(day8 = "darkorange2", day40 = "cyan3", controls='gray')) +
   xlim(-23,-4) +
   labs(x = "log10(pgen)", y = "proportion of V/CDR3s", fill = "", color = "") +
   theme_classic() + # keep the theme consistent for all our plots
@@ -221,10 +221,10 @@ svg("output_figures/pgen_LCMV_lines.svg")
 print(p21)
 dev.off()
 
-p22<-ggplot(lcmv.new[lcmv.new$condition!="controls",],aes(x = pgen_log10, y=prop, fill=condition, color=condition))+
+p22<-ggplot(lcmv.new[lcmv.new$day!="controls",],aes(x = pgen_log10, y=prop, fill=day, color=day))+
   geom_col(position=position_dodge(preserve="single", width=0.8), width=0.5) +
-  scale_fill_manual(values = c(LCMV8 = "darkorange2", LCMV40 = "cyan3")) +
-  scale_color_manual(values = c(LCMV8 = "darkorange2", LCMV40 = "cyan3")) +
+  scale_fill_manual(values = c(day8 = "darkorange2", day40 = "cyan3")) +
+  scale_color_manual(values = c(day8 = "darkorange2", day40 = "cyan3")) +
   xlim(-23,-4) +
   labs(x = "log10(pgen)", y = "proportion of V/CDR3s", fill = "", color = "") +
   theme_classic() + # keep the theme consistent for all our plots
