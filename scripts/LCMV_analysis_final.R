@@ -54,6 +54,7 @@ for (f in filenames){
   data1<-read.table(paste0(input_folder,f),sep=",",header = TRUE,row.names = 1)
   
   print(dim(data1))
+  print(f)
   
   name<-colnames(data1)[1]
   epitope<-strsplit(name,split="\\.")[[1]][1]
@@ -69,6 +70,8 @@ for (f in filenames){
   good<-names(counts_eff[counts_eff>0])
   data<-data1[rownames(data1) %in% good,]
   eff_day8<-eff[rownames(eff) %in% good,]
+  print("dim day8")
+  print(dim(eff_day8))
   colnames(eff_day8)<-lapply(colnames(eff), function(x){
     mylist<-strsplit(x, split="\\.")[[1]][2:3]
     paste(mylist, collapse = ".")
@@ -180,6 +183,8 @@ for (f in filenames){
   # I want only the ones that come up later
   data<-data1[rownames(data1) %in% good,]
   eff_day40<-eff[rownames(eff) %in% good,]
+  print("dim day40")
+  print(dim(eff_day40))
   colnames(eff_day40)<-lapply(colnames(eff), function(x){
     mylist<-strsplit(x, split="\\.")[[1]][2:3]
     paste(mylist, collapse = ".")
