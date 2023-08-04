@@ -3,10 +3,6 @@ Scripts that produce data and figures for the COVIDsortium TCR paper (Aug 2022)
 
 ### Figures – data and scripts
 
-Current version of MS is Word file TCR_COV2_V6.docx; Current main figures : Figures_V6.pptx; Current supplementary figures : Figures_S_V4.pptx 
-
-*Figures_V6 and Figures_S_V5 are after correction of HCW 184 and 195 metadata. MS V6 is the one that incorporates comments from all authors.*
-
 Data can be found at: https://www.dropbox.com/sh/neg3lpofw85l9ng/AAAw-HckR7LYxKz7TMNQ90zca?dl=0
 
 Note: the scripts automatically load the data from DropBox. This works for me (although sometimes I need to change the timeout), but does not seem to always work outside of the UK. You might need to download the data locally and tweak the scripts to load them.
@@ -28,8 +24,6 @@ Need to run twice, once for alpha, and once for beta. Produces plots; and a list
 
 - [x] **2A, B, C** annotated_overlap.R - looks at the overlap with expanded and with controls (generated with controls_long.R), plots the venn diagram and the bar plot.
 
-*controls numbers generated with old controls to figure out code. Need to re-run with controls from myriad when done*
-
 - [x] **2D** script_4.R Section C. 
 
 script_4.R uses exp_AB_merge2.txt, which is the list of annotated TCRs. There is no “script” for generating this. It is constructed semi-manually from the annotation data from Tao as well as what was in VDJdb and the Franics et al. paper.
@@ -40,8 +34,6 @@ script_4.R uses exp_AB_merge2.txt, which is the list of annotated TCRs. There is
 
 - [x] **Fig 3** - emerson1.R: uses the whole (unique) non-expanded set and the whole (unique) expanded set to compare sharing levels and precursor frequencies. This should be run after annotate_timepoint.R, which generates exp_AB_wide4.R. The emerson data is collated by merge_emerson_data.ipynb
 
-*Note: Emerson data does not fit on my DropBox nor on git, so I don't know where to save it*
-
 - [x] **Fig 4** Added newest version that CT provided 30/06/2022.
 
 - [x] **Fig 5B** LCMV_analysis.R
@@ -50,7 +42,7 @@ script_4.R uses exp_AB_merge2.txt, which is the list of annotated TCRs. There is
 
 #### Supplementary
 
-- [x] **S1** FACS Plots from Michal - *they are a little pixelated, is there another version?*
+- [x] **S1** FACS Plots from Michal
 
 - [x] **S2** script_2.R, Section A - 2 separate heatmaps for PCR+ and PCR-
 
